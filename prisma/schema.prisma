@@ -1,0 +1,232 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model category {
+  categoryName                 String @id @db.VarChar(32)
+  item_item_categoryTocategory item[] @relation("item_categoryTocategory")
+}
+
+model delivery {
+  deliveryID   Int     @id @default(autoincrement())
+  distanceCost Decimal @db.Decimal(10, 2)
+  vehicleType  String  @db.VarChar(20)
+  notes        String? @db.VarChar(255)
+  vehicle      vehicle @relation(fields: [vehicleType], references: [vehicleType], onDelete: NoAction, onUpdate: NoAction, map: "delivery_ibfk_1")
+  txn          txn[]
+
+  @@index([vehicleType], map: "vehicleType")
+}
+
+model employee {
+  employeeID      Int               @id
+  username        String            @unique(map: "username") @db.VarChar(32)
+  password        String            @db.VarChar(32)
+  firstName       String            @db.VarChar(20)
+  lastName        String            @db.VarChar(20)
+  email           String?           @db.VarChar(100)
+  active          Boolean           @default(true)
+  locked          Boolean
+  positionID      Int
+  siteID          Int
+  posn            posn              @relation(fields: [positionID], references: [positionID], onDelete: NoAction, onUpdate: NoAction, map: "employee_ibfk_1")
+  site            site              @relation(fields: [siteID], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "employee_ibfk_2")
+  txnaudit        txnaudit[]
+  user_permission user_permission[]
+
+  @@index([positionID], map: "positionID")
+  @@index([siteID], map: "siteID")
+}
+
+model inventory {
+  itemID           Int
+  siteID           Int
+  quantity         Int
+  itemLocation     String? @db.VarChar(20)
+  reorderThreshold Int?
+  item             item    @relation(fields: [itemID], references: [itemID], onDelete: NoAction, onUpdate: NoAction, map: "inventory_ibfk_1")
+  site             site    @relation(fields: [siteID], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "inventory_ibfk_2")
+
+  @@id([itemID, siteID])
+  @@index([siteID], map: "siteID")
+}
+
+model item {
+  itemID                           Int         @id @default(autoincrement())
+  name                             String      @db.VarChar(100)
+  sku                              String      @db.VarChar(20)
+  description                      String?     @db.VarChar(255)
+  category                         String      @db.VarChar(32)
+  weight                           Decimal     @db.Decimal(10, 2)
+  costPrice                        Decimal     @db.Decimal(10, 2)
+  retailPrice                      Decimal     @db.Decimal(10, 2)
+  supplierID                       Int
+  active                           Boolean     @default(true)
+  notes                            String?     @db.VarChar(255)
+  caseSize                         Int
+  inventory                        inventory[]
+  supplier                         supplier    @relation(fields: [supplierID], references: [supplierID], onDelete: NoAction, onUpdate: NoAction, map: "item_ibfk_1")
+  category_item_categoryTocategory category    @relation("item_categoryTocategory", fields: [category], references: [categoryName], onDelete: NoAction, onUpdate: NoAction, map: "item_ibfk_2")
+  txnitems                         txnitems[]
+
+  @@index([category], map: "category")
+  @@index([supplierID], map: "supplierID")
+}
+
+model permission {
+  permissionID    String            @id @db.VarChar(20)
+  user_permission user_permission[]
+}
+
+model posn {
+  positionID      Int        @id @default(autoincrement())
+  permissionLevel String     @db.VarChar(20)
+  employee        employee[]
+}
+
+model province {
+  provinceID                           String     @id @db.VarChar(2)
+  provinceName                         String     @db.VarChar(20)
+  countryCode                          String     @db.VarChar(50)
+  site                                 site[]
+  supplier_supplier_provinceToprovince supplier[] @relation("supplier_provinceToprovince")
+}
+
+model site {
+  siteID                   Int         @id @default(autoincrement())
+  name                     String      @db.VarChar(50)
+  provinceID               String      @db.VarChar(2)
+  address                  String      @db.VarChar(50)
+  address2                 String?     @db.VarChar(50)
+  city                     String      @db.VarChar(50)
+  country                  String      @db.VarChar(50)
+  postalCode               String      @db.VarChar(14)
+  phone                    String      @db.VarChar(14)
+  dayOfWeek                String?     @db.VarChar(50)
+  distanceFromWH           Int
+  siteType                 String?     @db.VarChar(50)
+  notes                    String?     @db.VarChar(255)
+  active                   Boolean     @default(true)
+  employee                 employee[]
+  inventory                inventory[]
+  province                 province    @relation(fields: [provinceID], references: [provinceID], onDelete: NoAction, onUpdate: NoAction, map: "site_ibfk_1")
+  sitetype                 sitetype?   @relation(fields: [siteType], references: [siteType], onDelete: NoAction, onUpdate: NoAction, map: "site_ibfk_2")
+  txn_txn_siteIDToTosite   txn[]       @relation("txn_siteIDToTosite")
+  txn_txn_siteIDFromTosite txn[]       @relation("txn_siteIDFromTosite")
+  txnaudit                 txnaudit[]
+
+  @@index([provinceID], map: "provinceID")
+  @@index([siteType], map: "siteType")
+}
+
+model sitetype {
+  siteType String  @id @db.VarChar(50)
+  notes    String? @db.VarChar(255)
+  site     site[]
+}
+
+model supplier {
+  supplierID                           Int      @id @default(autoincrement())
+  name                                 String   @db.VarChar(50)
+  address1                             String   @db.VarChar(50)
+  address2                             String?  @db.VarChar(50)
+  city                                 String   @db.VarChar(50)
+  country                              String   @db.VarChar(50)
+  province                             String   @db.VarChar(2)
+  postalcode                           String   @db.VarChar(11)
+  phone                                String   @db.VarChar(14)
+  contact                              String?  @db.VarChar(100)
+  active                               Boolean  @default(true)
+  item                                 item[]
+  province_supplier_provinceToprovince province @relation("supplier_provinceToprovince", fields: [province], references: [provinceID], onDelete: NoAction, onUpdate: NoAction, map: "supplier_ibfk_1")
+
+  @@index([province], map: "province")
+}
+
+model txn {
+  txnID                     Int        @id @default(autoincrement())
+  siteIDTo                  Int
+  siteIDFrom                Int
+  status                    String     @db.VarChar(20)
+  shipDate                  DateTime   @db.DateTime(0)
+  txnType                   String     @db.VarChar(20)
+  barCode                   String     @db.VarChar(50)
+  createdDate               DateTime   @db.DateTime(0)
+  deliveryID                Int?
+  emergencyDelivery         Boolean?
+  site_txn_siteIDToTosite   site       @relation("txn_siteIDToTosite", fields: [siteIDTo], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_1")
+  site_txn_siteIDFromTosite site       @relation("txn_siteIDFromTosite", fields: [siteIDFrom], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_2")
+  txnstatus                 txnstatus  @relation(fields: [status], references: [statusName], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_3")
+  txntype                   txntype    @relation(fields: [txnType], references: [txnType], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_4")
+  delivery                  delivery?  @relation(fields: [deliveryID], references: [deliveryID], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_5")
+  txnitems                  txnitems[]
+
+  @@index([deliveryID], map: "deliveryID")
+  @@index([siteIDFrom], map: "siteIDFrom")
+  @@index([siteIDTo], map: "siteIDTo")
+  @@index([status], map: "status")
+  @@index([txnType], map: "txnType")
+}
+
+model txnaudit {
+  txnAuditID Int       @id @default(autoincrement())
+  txnID      Int?
+  txnType    String?   @db.VarChar(20)
+  status     String?   @db.VarChar(20)
+  txnDate    DateTime  @default(now()) @db.DateTime(0)
+  SiteID     Int
+  deliveryID Int?
+  employeeID Int?
+  notes      String?   @db.VarChar(255)
+  site       site      @relation(fields: [SiteID], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "txnaudit_ibfk_1")
+  employee   employee? @relation(fields: [employeeID], references: [employeeID], onDelete: NoAction, onUpdate: NoAction, map: "txnaudit_ibfk_2")
+
+  @@index([SiteID], map: "SiteID")
+  @@index([employeeID], map: "employeeID")
+}
+
+model txnitems {
+  txnID    Int
+  ItemID   Int
+  quantity Int
+  txn      txn  @relation(fields: [txnID], references: [txnID], onDelete: NoAction, onUpdate: NoAction, map: "txnitems_ibfk_1")
+  item     item @relation(fields: [ItemID], references: [itemID], onDelete: NoAction, onUpdate: NoAction, map: "txnitems_ibfk_2")
+
+  @@id([txnID, ItemID])
+  @@index([ItemID], map: "ItemID")
+}
+
+model txnstatus {
+  statusName        String @id @db.VarChar(20)
+  statusDescription String @db.VarChar(100)
+  txn               txn[]
+}
+
+model txntype {
+  txnType String @id @db.VarChar(20)
+  txn     txn[]
+}
+
+model user_permission {
+  employeeID   Int
+  permissionID String     @db.VarChar(20)
+  employee     employee   @relation(fields: [employeeID], references: [employeeID], onDelete: NoAction, onUpdate: NoAction, map: "user_permission_ibfk_1")
+  permission   permission @relation(fields: [permissionID], references: [permissionID], onDelete: NoAction, onUpdate: NoAction, map: "user_permission_ibfk_2")
+
+  @@id([employeeID, permissionID])
+  @@index([permissionID], map: "permissionID")
+}
+
+model vehicle {
+  vehicleType     String     @id @db.VarChar(20)
+  maxWeight       Decimal    @db.Decimal(10, 0)
+  HourlyTruckCost Decimal    @db.Decimal(10, 2)
+  costPerKm       Decimal    @db.Decimal(10, 2)
+  notes           String     @db.VarChar(255)
+  delivery        delivery[]
+}
