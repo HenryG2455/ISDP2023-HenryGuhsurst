@@ -17,8 +17,13 @@ export class EmployeeService {
     return this.prisma.employee.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} employee`;
+  async findOne(id: string) {
+    const employee = await this.prisma.employee.findFirstOrThrow({
+      where: {
+        username: id   
+      }
+  });
+  return employee;
   }
 
   update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
