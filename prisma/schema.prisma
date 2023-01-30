@@ -24,7 +24,7 @@ model delivery {
 }
 
 model employee {
-  employeeID      Int               @id
+  employeeID      Int               @id @default(autoincrement())
   username        String            @unique(map: "username") @db.VarChar(32)
   password        String            @db.VarChar(32)
   firstName       String            @db.VarChar(20)

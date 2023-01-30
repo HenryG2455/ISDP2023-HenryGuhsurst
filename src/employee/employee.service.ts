@@ -21,16 +21,20 @@ export class EmployeeService {
     const employee = await this.prisma.employee.findFirstOrThrow({
       where: {
         username: id   
+      },
+      include:{
+        user_permission:true,
+        site:true
       }
   });
   return employee;
   }
 
-  update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
+  update(id: string, updateEmployeeDto: UpdateEmployeeDto) {
     return `This action updates a #${id} employee`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} employee`;
   }
 }
