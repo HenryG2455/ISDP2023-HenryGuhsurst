@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function NewEmployeeForm() {
+    const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -37,6 +39,8 @@ function NewEmployeeForm() {
       console.error("Failed to create employee");
     } else {
       console.log("Employee created successfully");
+      console.log(response);
+      navigate('/crud');
     }
   };
 

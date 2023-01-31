@@ -12,4 +12,5 @@ export class Employee implements Prisma.employeeUncheckedCreateInput {
     positionID: number;
     siteID: number;
     txnaudit?: Prisma.txnauditUncheckedCreateNestedManyWithoutEmployeeInput;
+    permissions?: Prisma.user_permissionUncheckedCreateNestedManyWithoutEmployeeInput;
 }

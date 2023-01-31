@@ -23,12 +23,12 @@ export class EmployeeService {
 			txnaudit: undefined,
 			posn: {
 				connect: {
-					positionID: createEmployeeDto.positionID,
+					positionID: 1,
 				},
 			},
 			site: {
 				connect: {
-					siteID: createEmployeeDto.siteID,
+					siteID:1,
 				},
 			},
 		};
@@ -65,7 +65,13 @@ export class EmployeeService {
     return `This action updates a #${id} employee`;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} employee`;
+  async remove(id: string) {
+    const tempID:number = parseInt(id);
+    const deleteUser = await this.prisma.employee.delete({
+      where: {
+        employeeID: tempID,
+      },
+    })
+    return deleteUser;
   }
 }

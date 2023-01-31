@@ -1,6 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeTable({ employees }) {
+    const navigate = useNavigate();
+    async function deleteEmp(event){
+        let id = parseInt(event.target.value);
+        //console.log(typeof id);
+        const response = await fetch("http://localhost:8000/employee/"+id, 
+        {
+            method: "Delete",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+        console.error("Failed to delete employee");
+        } else {
+        console.log("Employee deleted successfully");
+        //console.log(response);
+        window.location.reload();
+        }
+    }
   return (
     <table>
       <thead>
@@ -21,7 +42,7 @@ export default function EmployeeTable({ employees }) {
             <td>{employee.active ? "Yes" : "No"}</td>
             <td>
               <button>Edit</button>
-              <button>Delete</button>
+              <button value={employee.employeeID} onClick={deleteEmp}>Delete</button>
             </td>
           </tr>
         ))}
