@@ -1,0 +1,11 @@
+.hidden{
+    display: none;
+}
+.navlink{
+    margin:2px;
+    padding:.5rem;
+}
+.navbar{
+    padding:.5rem;
+    background-color: rgb(189, 229, 245);
+}
