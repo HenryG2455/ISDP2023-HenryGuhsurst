@@ -3,7 +3,6 @@ import React, { useState } from "react";
 function NewEmployeeForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
