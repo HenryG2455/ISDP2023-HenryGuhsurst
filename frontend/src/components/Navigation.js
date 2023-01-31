@@ -6,7 +6,7 @@ import { NavLink, useNavigate} from 'react-router-dom';
 export default function Navigation() {
     const navigate = useNavigate();
     const [className1, setClassName1] = useState('');
-    
+    const [emp, setEmp] = useState('');
     useEffect(() => {
         // Check For User
         checkUser();
@@ -20,6 +20,7 @@ export default function Navigation() {
         }else{
             let crud =[];
             let user = JSON.parse(temp);
+            setEmp(user);
             if(user.user_permission.length>0){
                 user.user_permission.forEach(ele => {
                     //console.log(ele.permissionID);
