@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect } from 'react';
-import EmployeeTable from "./subComponents/EmployeeTable";
+import EmployeeTable from "./CRUD_Components/EmployeeTable";
 import { useNavigate} from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 
@@ -35,7 +35,7 @@ export default function EmployeeCRUD() {
     }
   return (
     <div>
-        EmployeeCRUD<br/>
+        EmployeeCRUD Page<br/>
         <button onClick={toAddPage}>Add Employee</button><br/>
         <EmployeeTable  employees={emps} />
     </div>

@@ -3,24 +3,26 @@ import './Main.css';
  
 import { NavLink, useNavigate} from 'react-router-dom';
  
-export default function Navigation() {
+export default function Navigation({ user, setUser }) {
     const navigate = useNavigate();
-    const [className1, setClassName1] = useState('');
-    const [emp, setEmp] = useState('');
+    const [tempUser, setTempUser] = useState(null);
+    const [crudName, setCrudName] = useState('');
+    const [className2, setClassName2] = useState('');
     useEffect(() => {
         // Check For User
-        checkUser();
-      });
+        console.log(user);
+        authUser();
+    });
 
-    function checkUser(){
-        let temp = localStorage.getItem("User");
-        //console.log(JSON.parse(temp));
-        if(temp == null){
-            setClassName1(' hidden');
+      
+    function authUser(){
+        console.log(user);
+        if(user == null){
+            setCrudName(' hidden');
         }else{
+            setCrudName('');
+            setClassName2('');
             let crud =[];
-            let user = JSON.parse(temp);
-            setEmp(user);
             if(user.user_permission.length>0){
                 user.user_permission.forEach(ele => {
                     //console.log(ele.permissionID);
@@ -31,19 +33,21 @@ export default function Navigation() {
             }
             console.log(crud);
             if(crud.length < 3){
-                setClassName1(' hidden');
+                setCrudName(' hidden');
             }
         }
     }
     function Logout(){
         localStorage.removeItem("User");
+        setUser(null);
+        setCrudName(' hidden');
         navigate("/login");
     }
     return (
        <div className= 'navbar'>
           <NavLink className= 'navlink' to="/">Home</NavLink>
-          <NavLink id='crud' className={className1+' navlink'} to="/crud">Employee CRUD</NavLink>
-          <a id='logout' className={className1} onClick={Logout}>Logout</a>
+          <NavLink id='crud' className={crudName+' navlink'} to="/crud">Employee CRUD</NavLink>
+          <a id='logout' className={className2} onClick={Logout}>Logout</a>
        </div>
     );
 }

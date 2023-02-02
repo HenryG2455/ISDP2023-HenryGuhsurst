@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function NewEmployeeForm() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
-  const [positionId, setPositionId] = useState("");
-  const [siteId, setSiteId] = useState("");
+  const [positionID, setPositionID] = useState(0);
+  const [siteID, setSiteID] = useState(0);
   const [active, setActive] = useState(false);
   const [locked, setLocked] = useState(false);
 
@@ -23,10 +23,11 @@ function NewEmployeeForm() {
       password,
       active,
       locked,
-      positionId,
-      siteId,
+      positionID,
+      siteID,
       
     };
+    console.log(employee);
     const response = await fetch("http://localhost:8000/employee", {
       method: "POST",
       headers: {
@@ -94,19 +95,20 @@ function NewEmployeeForm() {
           <div>
             <label htmlFor="positionId">Position ID:</label>
             <input
-              type="text"
+              type="number"
               id="positionId"
-              value={positionId}
-              onChange={(event) => setPositionId(event.target.value)}
+              value={positionID}
+              onChange={(event) => setPositionID(parseInt(event.target.value))}
             />
           </div>
           <div>
             <label htmlFor="siteId">Site ID:</label>
             <input
-              type="text"
+              min={0}
+              type="number"
               id="siteId"
-              value={siteId}
-              onChange={(event) => setSiteId(event.target.value)}
+              value={siteID}
+              onChange={(event) => setSiteID(parseInt(event.target.value))}
             />
           </div>
           <div>

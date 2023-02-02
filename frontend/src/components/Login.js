@@ -3,11 +3,13 @@ import bcrypt from 'bcryptjs';
 import { useNavigate} from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
+import App from '../App';
 
 const salt = bcrypt.genSaltSync(11);
 let res;
 
-export default function Login() {
+export default function Login({user, setUser}) {
+  //console.log(setUser);
   const navigate = useNavigate();
   const [errorText, setErrorText] = useState('');
   const [username, setUsername] = useState('');
@@ -36,6 +38,7 @@ export default function Login() {
     if(bcrypt.compareSync(password, hashedPassword)){
       delete emp.password;
       localStorage.setItem("User",JSON.stringify(emp));
+      setUser(emp);
       navigate('/');
     }else{
       setErrorText("Password is Wrong");
@@ -52,7 +55,7 @@ export default function Login() {
     <Card style={{ width: '18rem' }}>
       <Card.Body>
         <form onSubmit={handleSubmit}>
-          <Card.Title>Login</Card.Title>
+          <Card.Title>Login Page</Card.Title>
           <Card.Text>
           <label>
           Username:

@@ -10,8 +10,8 @@ export class EmployeeService {
   constructor(private prisma: PrismaService){}
 
   async create(createEmployeeDto: CreateEmployeeDto) {
-    let { firstName, lastName, password, username, email } = createEmployeeDto;
-
+    let { firstName, lastName, password, username, email, positionID, siteID} = createEmployeeDto;
+    console.log(firstName+" : "+positionID +" : "+siteID);
 		const data: Prisma.employeeCreateInput = {
 			firstName,
 			lastName,
@@ -23,12 +23,12 @@ export class EmployeeService {
 			txnaudit: undefined,
 			posn: {
 				connect: {
-					positionID: 1,
+					positionID
 				},
 			},
 			site: {
 				connect: {
-					siteID:1,
+					siteID
 				},
 			},
 		};
@@ -65,6 +65,7 @@ export class EmployeeService {
     return `This action updates a #${id} employee`;
   }
 
+  //Delete function
   async remove(id: string) {
     const tempID:number = parseInt(id);
     const deleteUser = await this.prisma.employee.delete({
