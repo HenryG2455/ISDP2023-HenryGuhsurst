@@ -11,6 +11,11 @@ export class EmployeeController {
   create(@Body() createEmployeeDto: CreateEmployeeDto) {
     return this.employeeService.create(createEmployeeDto);
   }
+  
+  @Post('active/:id')
+  setInactive(@Param('id') id: string) {
+    return this.employeeService.setInactive(id);
+  }
 
   @Get()
   findAll() {
@@ -26,6 +31,8 @@ export class EmployeeController {
   update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
     return this.employeeService.update(id, updateEmployeeDto);
   }
+
+ 
 
   @Delete(':id')
   remove(@Param('id') id: string) {

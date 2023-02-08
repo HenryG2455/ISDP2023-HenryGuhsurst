@@ -10,13 +10,13 @@ export default function Navigation({ user, setUser }) {
     const [className2, setClassName2] = useState('');
     useEffect(() => {
         // Check For User
-        console.log(user);
+        //console.log(user);
         authUser();
     });
 
       
     function authUser(){
-        console.log(user);
+        //console.log(user);
         if(user == null){
             setCrudName(' hidden');
         }else{
@@ -31,7 +31,7 @@ export default function Navigation({ user, setUser }) {
                     }
                 });
             }
-            console.log(crud);
+            //console.log(crud);
             if(crud.length < 3){
                 setCrudName(' hidden');
             }

@@ -4,27 +4,37 @@ import { useNavigate} from 'react-router-dom';
 
 let res;
 
-export default function Dashboard() {
+export default function Dashboard({user}) {
     const navigate = useNavigate();
-    const [user, setUser] = useState('');
+    const [tempUser, setUser] = useState(null);
+
+    useEffect( ()=> {
+      console.log(tempUser);
+    },[tempUser]);
+
     useEffect(() => {
-        // Update the document title using the browser API
-        checkUser();
-      },[]);
+      checkUser();
+    });
+
     function checkUser(){
-        let temp = localStorage.getItem("User");
-        //console.log(temp);
-        if(temp == null){
-          navigate("/login");
-        }else{
-          setUser(JSON.parse(temp));
-          
-        }
+      console.log(user)
+      let temp = localStorage.getItem("User");
+      //console.log(temp);
+      if(temp == null){
+        navigate("/login");
+      }else{
+        setUser(user);
+      }
     }
     
   return (
     <div>
-      Dashboard - Hello {user.firstName}
+      <span>
+        Dashboard - Hello {tempUser != null? tempUser.firstName || res:String}
+      </span>
+      <span id='location'>
+        Location - {tempUser != null? tempUser.site.address || res:String}
+      </span>
     </div>
   )
 }

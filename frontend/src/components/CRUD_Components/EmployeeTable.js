@@ -13,9 +13,9 @@ const EmployeeTable = ({ employees }) => {
   async function deleteEmp(event){
       let id = parseInt(event.target.value);
       //console.log(typeof id);
-      const response = await fetch("http://localhost:8000/employee/"+id, 
+      const response = await fetch("http://localhost:8000/employee/active/"+id, 
       {
-          method: "Delete",
+          method: "Post",
           headers: {
               "Content-Type": "application/json",
           },

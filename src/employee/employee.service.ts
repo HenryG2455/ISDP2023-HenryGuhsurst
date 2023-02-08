@@ -75,4 +75,17 @@ export class EmployeeService {
     })
     return deleteUser;
   }
+
+  async setInactive(id: string) {
+    const tempID:number = parseInt(id);
+    const User = await this.prisma.employee.update({
+      where: {
+        employeeID: tempID,
+      },
+      data:{
+        active: false,
+      }
+    })
+    return User;
+  }
 }

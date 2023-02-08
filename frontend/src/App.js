@@ -55,7 +55,7 @@ function App(){
             <div>
                 <Navigation user={user} setUser={setUser}/>
                 <Routes>
-                    <Route index element={<DashBoard/>} />
+                    <Route index element={<DashBoard user={user} setUser={setUser}/>} />
                     <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
                     <Route path="/crud" element={<EmployeeCRUD/>} exact/>
                     <Route path="/addemployee" element={<NewEmployeeForm/>} exact/>
