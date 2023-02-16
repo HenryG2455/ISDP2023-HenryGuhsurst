@@ -9,6 +9,13 @@ import { PrismaService } from '../prisma/prisma.service';
 export class EmployeeService {
   constructor(private prisma: PrismaService){}
 
+  exclude(user, keys) {
+    for (let key of keys) {
+      delete user[key]
+    }
+    return user
+  }
+
   async create(createEmployeeDto: CreateEmployeeDto) {
     let { firstName, lastName, password, username, email, positionID, siteID} = createEmployeeDto;
     console.log(firstName+" : "+positionID +" : "+siteID);
@@ -44,8 +51,29 @@ export class EmployeeService {
     }
   }
 
-  findAll() {
-    return this.prisma.employee.findMany();
+  async findAll() {
+    const employees = await this.prisma.employee.findMany({
+      include:{
+        site:true,
+        posn:true
+      }
+    });
+    const empsWithoutPasswords = employees.map(user => {
+      const { password, ...userWithoutPassword } = user
+      return userWithoutPassword
+    })
+    return empsWithoutPasswords
+  }
+
+  findAllAdmin() {
+    const employees = this.prisma.employee.findMany({
+      include:{
+        user_permission:true,
+        site:true,
+        posn:true
+      }
+    });
+    return employees
   }
 
   async findOne(id: string) {
@@ -55,7 +83,8 @@ export class EmployeeService {
       },
       include:{
         user_permission:true,
-        site:true
+        site:true,
+        posn:true
       }
   });
   return employee;

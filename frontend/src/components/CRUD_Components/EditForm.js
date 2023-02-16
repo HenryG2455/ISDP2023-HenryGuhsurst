@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const EditForm = ({ employee }) => {
     const navigate = useNavigate();
+    const [posn, setPosn] = useState(employee.posn)
+    const [permissions, setPermissions] = useState(employee.user_permission)
+    const [allPermissions, setAllPermissions] = useState([])
     const [username, setUsername] = useState(employee.username);
     const [email, setEmail] = useState(employee.email);
     const [firstName, setFirstName] = useState(employee.firstName);
@@ -13,7 +16,19 @@ const EditForm = ({ employee }) => {
     const [active, setActive] = useState(employee.active);
     const [locked, setLocked] = useState(employee.locked);
     
+    useEffect(() => {
+      console.log(employee)
+      fetch('http://localhost:8000/permission', {method: 'GET'})
+      .then(response => response.json())
+      .then(data => {
+        setAllPermissions(data)
+      })
+      
+    },[]);
+
+
     const handleSubmit = async (event) => {
+        console.log(employee);
         event.preventDefault();
         const empTemp= {
           firstName,
@@ -25,6 +40,7 @@ const EditForm = ({ employee }) => {
           locked,
           positionId,
           siteId,
+          permissions
           
         };
         const response = await fetch("http://localhost:8000/employee", {
@@ -109,6 +125,14 @@ const EditForm = ({ employee }) => {
                 value={siteId}
                 onChange={(event) => setSiteId(event.target.value)}
               />
+            </div>
+            <div>
+              <label htmlFor="permissions">Permissions:</label>
+              <p>
+              {permissions.map(emp =>(
+                emp.permissionID + ", "
+              ))}
+              </p>
             </div>
             <div>
               <label htmlFor="active">Active:</label>

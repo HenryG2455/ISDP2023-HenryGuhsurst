@@ -21,6 +21,11 @@ export class EmployeeController {
   findAll() {
     return this.employeeService.findAll();
   }
+  
+  @Get('admin')
+  findAllAdmin() {
+    return this.employeeService.findAllAdmin();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

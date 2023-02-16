@@ -6,9 +6,10 @@ import { PosnModule } from './posn/posn.module';
 import { UserPermissionModule } from './user_permission/user_permission.module';
 import { TxnModule } from './txn/txn.module';
 import { TxnauditModule } from './txnaudit/txnaudit.module';
+import { PermissionModule } from './permission/permission.module';
 
 @Module({
-  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule],
+  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule, PermissionModule],
   controllers: [AppController],
   providers: [AppService],
 })

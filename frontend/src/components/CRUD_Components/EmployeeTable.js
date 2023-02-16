@@ -36,6 +36,7 @@ const EmployeeTable = ({ employees }) => {
           <th>Employee-ID</th>
           <th>First Name</th>
           <th>Last Name</th>
+          <th>Position</th>
           <th>Active</th>
           <th>Action</th>
         </tr>
@@ -47,6 +48,7 @@ const EmployeeTable = ({ employees }) => {
               <td>{employee.employeeID}</td>
               <td>{employee.firstName}</td>
               <td>{employee.lastName}</td>
+              <td>{employee.posn.permissionLevel}</td>
               <td>{employee.active ? "Yes" : "No"}</td>
               <td>
                 <button onClick={() => handleEdit(employee)}>Edit</button>
