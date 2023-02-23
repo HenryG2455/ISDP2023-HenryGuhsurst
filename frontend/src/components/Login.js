@@ -26,6 +26,7 @@ export default function Login({user, setUser}) {
       setErrorText("Username or Password is Wrong");
     }else{
       const emp = await res.json();
+      console.log(emp)
       authenticateUser(emp);
     }
     

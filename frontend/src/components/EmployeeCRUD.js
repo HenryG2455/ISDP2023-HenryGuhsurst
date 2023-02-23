@@ -16,7 +16,7 @@ export default function EmployeeCRUD() {
     
     async function getEmps(){
         try {
-          res = await fetch('http://localhost:8000/employee/admin');
+          res = await fetch('http://localhost:8000/employee/admin/getall');
         } catch (error) {
           // TypeError: Failed to fetch
           console.log('There was an error', error);

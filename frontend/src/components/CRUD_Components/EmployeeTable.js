@@ -1,9 +1,12 @@
-import React, { useState} from "react";
+import React, { useState, useEffect} from "react";
 import EditForm from './EditForm';
 import Table from 'react-bootstrap/Table';
 
 const EmployeeTable = ({ employees }) => {
   const [selectedEmployee, setSelectedEmployee] = useState({});
+  useEffect(()=>{
+    //console.log(employees);
+  })
 
   const handleEdit = (employee) => {
     console.log(employee);

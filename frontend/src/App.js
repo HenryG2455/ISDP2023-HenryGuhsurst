@@ -11,23 +11,12 @@ import Navigation from './components/Navigation';
  
 function App(){
     const [user, setUser] = useState(null);
-    //const navigate = useNavigate();
     useEffect( ()=> {
         console.log(user);
-        // let temp = localStorage.getItem("User");
-        // setUser(JSON.parse(temp));
-        // //console.log(temp);
-        // if(temp == null){
-        //     //navigate("/login");
-        // }else if(user == null){
-        //     console.log(JSON.parse(temp))
-            
-        // }
       },[user]);
 
       useEffect(()=>{
         let temp = localStorage.getItem("User");
-
         //console.log(temp);
         if(temp == null){
             //navigate("/login");
@@ -39,16 +28,6 @@ function App(){
       const setEmployee = (emp) =>{
         setUser(emp);
       }
-    // function checkUser(){
-    //     let temp = localStorage.getItem("User");
-    //     //console.log(temp);
-    //     if(temp == null){
-    //         //navigate("/login");
-    //     }else{
-    //         console.log(JSON.parse(temp))
-    //         setUser(JSON.parse(temp));
-    //     }
-    // }
 
         return (      
             <BrowserRouter>

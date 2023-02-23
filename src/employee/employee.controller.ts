@@ -17,20 +17,23 @@ export class EmployeeController {
     return this.employeeService.setInactive(id);
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.employeeService.findOne(id);
+  }
+
+  @Get('admin/getall')
+  findAllAdmin() {
+    return this.employeeService.findAllAdmin();
+  }
+
   @Get()
   findAll() {
     return this.employeeService.findAll();
   }
   
-  @Get('admin')
-  findAllAdmin() {
-    return this.employeeService.findAllAdmin();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.employeeService.findOne(id);
-  }
+  
+  
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {

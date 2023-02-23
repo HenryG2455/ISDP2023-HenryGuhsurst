@@ -12,3 +12,10 @@
 #location{
     float: right;
 }
+.table-container {
+    max-height: 300px !important; /* set a fixed height */
+    overflow: auto !important; /* add a scrollbar if needed */
+}
+.orderInput{
+    width: 43px;
+}

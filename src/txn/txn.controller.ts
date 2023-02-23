@@ -17,6 +17,11 @@ export class TxnController {
     return this.txnService.findAll();
   }
 
+  @Get('orders/getall')
+  findAllOrders() {
+    return this.txnService.findAllOrders();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.txnService.findOne(+id);
