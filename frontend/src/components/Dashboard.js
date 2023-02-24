@@ -31,11 +31,11 @@ export default function Dashboard({user}) {
   return (
     <div id='pageContainer'>
       <div id='headingContainer'>
-        <span>
-          Dashboard - Hello {tempUser != null? tempUser.firstName || res:String}
-        </span>
+      <span>
+      Dashboard - Hello {tempUser != null ? tempUser.firstName || res() : ''}
+    </span>
         <span id='location'>
-          Location - {tempUser != null? tempUser.site.address || res:String}
+          Location - {tempUser != null? tempUser.site.address || res() : ''}
         </span>
       </div>
       <div id="contentContainer">

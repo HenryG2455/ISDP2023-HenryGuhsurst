@@ -11,9 +11,10 @@ import { ItemModule } from './item/item.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { TxnitemsModule } from './txnitems/txnitems.module';
+import { SiteModule } from './site/site.module';
 
 @Module({
-  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule, PermissionModule, ItemModule, InventoryModule, SupplierModule, TxnitemsModule],
+  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule, PermissionModule, ItemModule, InventoryModule, SupplierModule, TxnitemsModule, SiteModule],
   controllers: [AppController],
   providers: [AppService],
 })

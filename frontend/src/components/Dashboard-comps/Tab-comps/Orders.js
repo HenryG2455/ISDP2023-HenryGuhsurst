@@ -1,8 +1,7 @@
-import React, { useState, useEffect, Component} from 'react';
-import Table from 'react-bootstrap/Table';
+import React, { useState, useEffect} from 'react';
 import OrdersTable from './Order-comps/OrdersTable';
 import NewStoreOrder from './Order-comps/NewStoreOrder';
-import { permissionLevels } from '../../../data/Constants'
+import { constants } from '../../../data/Constants'
 import '../../Main.css';
 
 function Orders({user})  {
@@ -14,7 +13,7 @@ function Orders({user})  {
     const [errorText, setErrorText] = useState('');
     const [orders, setOrders] = useState(null);
     const [showComponent, setShowComponent] = useState(true);
-
+    const [sites, setSites] = useState([]);
 
     let res;
     useEffect(()=>{
@@ -26,6 +25,13 @@ function Orders({user})  {
             setCurUser(user);
             permissions();
             getOrders();
+            fetch('http://localhost:8000/site')
+            .then(response => response.json())
+            .then(data => {
+              const newArr = data.filter(site => site.siteID !== user.siteID);
+              setSites(newArr);
+              console.log(newArr);
+            });
         }
     },[user]);
 
@@ -45,7 +51,7 @@ function Orders({user})  {
           }
     }
     function permissions(){
-        if(user.user_permission.find(permission => permission.permissionID === permissionLevels.CREATESTOREORDER)){
+        if(user.user_permission.find(permission => permission.permissionID === constants.CREATESTOREORDER)){
             setHiddenNameSO('');
         }
     }
@@ -53,7 +59,7 @@ function Orders({user})  {
 
   return (
     <div>
-        {showComponent ? <OrdersTable user={curUser}  orders={orders}/> : <NewStoreOrder user={curUser} className={hiddenName} />}
+        {showComponent ? <OrdersTable user={curUser}  orders={orders}/> : <NewStoreOrder sites={sites} user={curUser} className={hiddenName} />}
         <button className={hiddenNameSO} onClick={() => {setShowComponent(!showComponent); setHiddenNameB(''); setHiddenNameSO(hidden);}}>New Store Order</button>
         <button className={hiddenNameB} onClick={() => {setShowComponent(!showComponent);  setHiddenNameB(hidden); setHiddenNameSO('');}}>Back</button>
     </div>

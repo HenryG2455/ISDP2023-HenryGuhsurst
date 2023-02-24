@@ -7,9 +7,11 @@ import { UpdateTxnDto } from './dto/update-txn.dto';
 export class TxnController {
   constructor(private readonly txnService: TxnService) {}
 
-  @Post()
-  create(@Body() createTxnDto: CreateTxnDto) {
-    return this.txnService.create(createTxnDto);
+  @Post('storeOrder/new')
+  create(@Body() createTxnDto: any) {
+    let txn =createTxnDto.txn;
+    let txnItems = createTxnDto.txnItems
+    return this.txnService.create(txn,txnItems);
   }
 
   @Get()
