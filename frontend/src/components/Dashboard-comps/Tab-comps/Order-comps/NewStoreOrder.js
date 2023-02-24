@@ -1,11 +1,14 @@
-import React, { useState, useEffect, Component} from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 import { Button } from 'react-bootstrap';
 import '../../../Main.css'
 import {constants, txnStatus, txnTypes} from '../../../../data/Constants';
-import { async } from 'rxjs';
+import { useNavigate} from 'react-router-dom';
+  
 
-function NewStoreOrder({user, sites}) {
+
+function NewStoreOrder({user, sites , setShowComponent}) {
+    const navigate = useNavigate();
     const [items, setItems] = useState([]);
     const [filteredItems, setFilteredItems] = useState([]);
     const [searchText, setSearchText] = useState('');
@@ -15,13 +18,16 @@ function NewStoreOrder({user, sites}) {
     const [tempCases, setTempCases] = useState(0);
     const [locations, setLocations] = useState([]);
     const [selectedButton, setSelectedButton] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
+
+    const Days = {SUNDAY:0, MONDAY:1, TUESDAY:2,WEDNESDAY:3, THURSDAY:4, FRIDAY:5, SATURDAY:6};
     //const [allSites, setSites] = useState([]);
      
     useEffect(() => {
       fetch('http://localhost:8000/item')
         .then(response => response.json())
         .then(data => {
-          console.log(data);
+          //console.log(data);
           setItems(data);
           setFilteredItems(data);
         });
@@ -35,7 +41,20 @@ function NewStoreOrder({user, sites}) {
     useEffect(()=>{
       console.log(selectedLocation)
     },[selectedLocation])
-    
+    //TABLE ROWS ADD Button Disabler
+    const handleRowClick = (id) => {
+      setSelectedRow(id);
+    };
+
+    function getNextDateByDayOfWeek(currentDate, dayOfWeek) {
+      const date = new Date(currentDate);
+      const targetDayOfWeek = dayOfWeek % 7;
+      const daysToAdd = targetDayOfWeek - date.getDay() + (targetDayOfWeek <= date.getDay() ? 7 : 0);
+      date.setDate(date.getDate() + daysToAdd);
+      return date.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+
     //SEARCH BAR
     const handleSearch = (event) => {
       const text = event.target.value.toLowerCase();
@@ -56,23 +75,32 @@ function NewStoreOrder({user, sites}) {
     //ADD ITEMS TO THE CART OF ITEMS FOR SUBMISSION
     const handleAddItem = (item) => {
       let newItem ={...item, quantity:cases}
-      setSelectedItems([...selectedItems, newItem]);
-      const inputs = document.querySelectorAll(".orderInput");
-      inputs.forEach((input) => (input.value = 0));
-      setCases(0);
+      if(selectedButton && selectedItems.length > 4){
+        alert("You can only order 5 items for emergency delivery");
+      }else{
+        setSelectedItems([...selectedItems, newItem]);
+        const inputs = document.querySelectorAll(".orderInput");
+        inputs.forEach((input) => (input.value = 0));
+        setCases(0);
+      }
+      
     }
 
     //HANDLE SUBMISSION OF THE CART TO THE DB
     const handleSubmit = async(event) => {
       event.preventDefault();
       const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const siteDeliveryDay = Days[user.site.dayOfWeek];
+      
+      const deliveryDate = getNextDateByDayOfWeek(currentDate, siteDeliveryDay);
+      console.log(deliveryDate);
       const barcode = Math.random().toString(36).substring(2, 12);
       console.log(selectedItems);
       const txn ={
         siteIDTo: parseInt(selectedLocation),
         siteIDFrom: user.siteID,
         status:txnStatus.SUBMITTED,
-        shipDate:currentDate,
+        shipDate:deliveryDate,
         txnType:txnTypes.STORE_ORDER,
         barCode:barcode,
         createdDate: currentDate,
@@ -100,16 +128,24 @@ function NewStoreOrder({user, sites}) {
         return response.json();
       })
       .then(data => {
-        // Handle the response data here
+        
+        setFilteredItems(items)
+        setSelectedItems([]);
+        setSelectedLocation('');
+        console.log(data);
+        navigate('/home');
       })
       .catch(error => {
-        // Handle errors here
+        setFilteredItems(items)
+        setSelectedItems([]);
+        setSelectedLocation('');
+        console.error('There has been a problem with your fetch operation:', error);
       });
       
     }
     //emergency selector
-    const handleRadioClick = (event) => {
-      setSelectedButton(event.target.value);
+    const handleRadioClick = () => {
+      setSelectedButton(!selectedButton);
     }
     //location selector function
     const handleLocationChange = (event) => {
@@ -129,7 +165,7 @@ function NewStoreOrder({user, sites}) {
     const cartTableColumns = ['ItemID', 'Description', 'Order Qty', 'CaseSize', 'Price']
     
     const sitePermission = (sites) => {
-      if(user.posn.permissionLevel == constants.WAREHOUSE_MANAGER){
+      if(user.posn.permissionLevel === constants.WAREHOUSE_MANAGER){
         setLocations(sites.map(site => (
           <option key={site.id} value={site.id}>
             {site.name + ': '+site.address}
@@ -149,14 +185,13 @@ function NewStoreOrder({user, sites}) {
             <h2>Items to add to Order</h2>
             <input type="text" placeholder="Search items" value={searchText} onChange={handleSearch} />
             <div id="radioBtn">
-              <div>
-                <input type="radio" name="mode" value={false} checked={selectedButton === false} onChange={handleRadioClick} />
-                <label>   Regular</label>   
-              </div>
-              <div>
-                <input type="radio" name="mode" value={true} checked={selectedButton === true} onChange={handleRadioClick} />
+              
+                <input type="radio" name="mode"  checked={selectedButton === false} onChange={handleRadioClick} />
+                <label>   Regular</label><br/>  
+             
+                <input type="radio" name="mode"  checked={selectedButton === true} onChange={handleRadioClick} />
                 <label>   Emergency</label>
-              </div>
+              
             </div>
           </div>
           <div className='table-container'>
@@ -171,13 +206,13 @@ function NewStoreOrder({user, sites}) {
                   </thead>
                   <tbody>
                       {filteredItems.map(item =>
-                      <tr key={item.itemID}>
+                      <tr key={item.itemID} onClick={() => handleRowClick(item.itemID)} className={selectedRow === item.itemID ? " selected" : ""}>
                           <td>{item.itemID}</td>
                           <td>{item.name}</td>
                           <td>{item.weight}</td>
                           <td>{item.caseSize}</td>
                           <td><input className='orderInput' type="number" defaultValue={tempCases} min={0} max={99} onChange={handleChange}/></td>
-                          <td><Button onClick={() => {handleAddItem(item); }}>Add</Button></td>
+                          <td><Button disabled={selectedRow !== item.itemID} onClick={() => {handleAddItem(item); }}>Add</Button></td>
                       </tr>
                       )}
                   </tbody>

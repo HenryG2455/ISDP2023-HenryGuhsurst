@@ -29,3 +29,17 @@
 #headerContainer{
     position: relative;
 }
+.selected{
+    background-color: #a1f6a6;
+}
+.orderInfo{
+    margin: 0;
+}
+#viewContainer{
+    position: relative;
+}
+#closeButton{
+    position: absolute; /* position absolutely within parent */
+    right: 0;
+    top:1rem;
+}

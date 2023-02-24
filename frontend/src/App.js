@@ -8,6 +8,9 @@ import EmployeeCRUD from './components/EmployeeCRUD';
 import NewEmployeeForm from './components/CRUD_Components/AddEmployee';
 import DashBoard from './components/Dashboard';
 import Navigation from './components/Navigation';
+import HomePage from './components/HomePage';
+import Locations from './components/Locations';
+import CreateNewSite from './components/Location-comps/CreateNewSite';
  
 function App(){
     const [user, setUser] = useState(null);
@@ -36,8 +39,11 @@ function App(){
                 <Routes>
                     <Route index element={<DashBoard user={user} setUser={setUser}/>} />
                     <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
-                    <Route path="/crud" element={<EmployeeCRUD/>} exact/>
+                    <Route path="/crud" element={<EmployeeCRUD  user={user}/>} exact/>
                     <Route path="/addemployee" element={<NewEmployeeForm/>} exact/>
+                    <Route path="/home" element={<HomePage user={user} setUser={setUser}/>} exact/>
+                    <Route path="/locations" element={<Locations user={user} setUser={setUser}/>} exact/>
+                    <Route path="/addsite" element={<CreateNewSite user={user} setUser={setUser}/>} exact/>
                 </Routes>
             </div> 
             </BrowserRouter>

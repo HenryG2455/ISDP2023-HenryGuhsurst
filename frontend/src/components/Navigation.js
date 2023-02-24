@@ -46,6 +46,8 @@ export default function Navigation({ user, setUser }) {
     return (
        <div className= 'navbar'>
           <NavLink className= 'navlink' to="/">Dashboard</NavLink>
+          <NavLink className= 'navlink' to="/home">HomePage</NavLink>
+          <NavLink className= 'navlink' to="/locations">Site Locations</NavLink>
           <NavLink id='crud' className={crudName+' navlink'} to="/crud">Employee CRUD</NavLink>
           <a id='logout' className={className2} onClick={Logout}>Logout</a>
        </div>

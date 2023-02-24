@@ -1,12 +1,16 @@
-import React, { useState, useEffect, Component} from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
+import OrderDetails from './ViewOrder';
 
 
 function OrdersTable({orders , user })  {
     const [allOrders, setAllOrders] = useState([])
-    const [hiddenName, setHiddenName] = useState('');
-    const [errorText, setErrorText] = useState('');
     const [selectedOrder, setSelectedOrder] = useState({});
+    const [selectedRow, setSelectedRow] = useState(null);
+
+    const handleRowClick = (id) => {
+      setSelectedRow(id);
+    };
 
 
     const handleView = (order) => {
@@ -18,7 +22,9 @@ function OrdersTable({orders , user })  {
         console.log(user);
     },[user])
     useEffect(()=>{
-        console.log(orders);
+      const jsonString = JSON.stringify(orders);
+      //console.log(jsonString);
+        
     },[orders])
 
     useEffect(() => {
@@ -37,31 +43,32 @@ function OrdersTable({orders , user })  {
     <Table striped bordered hover>
     <thead>
       <tr>
-        <th>Transaction-ID</th>
         <th>To</th>
         <th>From</th>
         <th>Status</th>
         <th>Emergency</th>
+        <th>Transaction-ID</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       {allOrders.map((order) => (
         <React.Fragment key={order.txnID}>
-          <tr >
-            <td>{order.txnID}</td>
-            <td>{order.siteIDTo}</td>
-            <td>{order.siteIDFrom}</td>
+          <tr key={order.txnID} onClick={() => handleRowClick(order.txnID)} className={selectedRow === order.txnID ? " selected" : ""}>
+            
+            <td>{order.site_txn_siteIDToTosite.name}</td>
+            <td>{order.site_txn_siteIDFromTosite.name}</td>
             <td>{order.status}</td>
             <td>{order.emergencyDelivery ? "Yes" : "No"}</td>
+            <td>{order.txnID}</td>
             <td>
-              <button onClick={() => handleView(order)}>View</button>
+              <button disabled={selectedRow !== order.txnID} onClick={() => handleView(order)}>View</button>
             </td>
           </tr>
           {selectedOrder.txnID === order.txnID && (
             <tr>
-              <td colSpan="5">
-                
+              <td colSpan="6">
+                <OrderDetails setSelectedOrder={setSelectedOrder} order={selectedOrder} />
               </td>
             </tr>
           )}

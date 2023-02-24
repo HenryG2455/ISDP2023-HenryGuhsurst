@@ -12,9 +12,11 @@ import { InventoryModule } from './inventory/inventory.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { TxnitemsModule } from './txnitems/txnitems.module';
 import { SiteModule } from './site/site.module';
+import { ProvinceModule } from './province/province.module';
+import { SitetypeModule } from './sitetype/sitetype.module';
 
 @Module({
-  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule, PermissionModule, ItemModule, InventoryModule, SupplierModule, TxnitemsModule, SiteModule],
+  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule, PermissionModule, ItemModule, InventoryModule, SupplierModule, TxnitemsModule, SiteModule, ProvinceModule, SitetypeModule],
   controllers: [AppController],
   providers: [AppService],
 })

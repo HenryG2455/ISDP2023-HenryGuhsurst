@@ -16,7 +16,6 @@ export class TxnService {
     console.log(createTxnDto)
     console.log(createTxnItems)
     // Add the txnItems object to the txnItems table
-    //const tempData = Enumerable.from(createTxnItems) as Enumerable<Prisma.txnitemsCreateManyTxnInput>;
     const txnItems = createTxnItems.map((dto) => ({
       // Map the DTO fields to the Prisma fields
       ItemID: dto.itemID,
@@ -62,8 +61,7 @@ export class TxnService {
         }
       },
     }
-    const createdTxn  = await this.prisma.txn.create({ data: data })
-    const txnID = createdTxn.txnID // Get the txnID of the newly created row
+    const createdTxn  = await this.prisma.txn.create({ data: data }) // Get the txnID of the newly created row
     return {createdTxn}
   }
 
