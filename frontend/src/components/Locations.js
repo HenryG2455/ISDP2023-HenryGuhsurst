@@ -69,7 +69,7 @@ function Locations({user, setUser}) {
               {selectedOrder.siteID === site.siteID && (
                 <tr>
                   <td colSpan="5">
-                    <SiteDetails setSelectedOrder={setSelectedOrder} site={selectedOrder} />
+                    <SiteDetails user={user} setSelectedOrder={setSelectedOrder} site={selectedOrder} />
                   </td>
                 </tr>
               )}

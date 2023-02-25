@@ -1,62 +1,30 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import Table from 'react-bootstrap/Table';
+import EditSite from './EditSite';
+import SiteDetailsTable from './SiteDetailsTable';
+import  { constants } from '../../data/Constants'
 
-const SiteDetails = ({ site, setSelectedOrder }) => {
+const SiteDetails = ({ user, site, setSelectedOrder }) => {
+  const [showInitial, setShowInitial] = useState(true);
+  const [hiddenClass, setHiddenClass] = useState(' hidden');
+
+
+  useEffect(() => {
+    if(user){
+      if(user.user_permission.find(permission => permission.permissionID === constants.EDITSITE)){
+        setHiddenClass('');
+      }
+    }
+  },[user])
+
+  const toggleComponent = () => {
+    setShowInitial(!showInitial);
+  }
+
   return (
-    <div id="viewContainer">
-    <button id="closeButton" onClick={() => setSelectedOrder({})}>X</button>
-      <Table striped bordered>
-        <tbody>
-          <tr>
-            <td>Name:</td>
-            <td>{site.name}</td>
-          </tr>
-          <tr>
-            <td>Address:</td>
-            <td>{site.address}</td>
-          </tr>
-          <tr>
-            <td>Address 2:</td>
-            <td>{site.address2}</td>
-          </tr>
-          <tr>
-            <td>City:</td>
-            <td>{site.city}</td>
-          </tr>
-          <tr>
-            <td>Province:</td>
-            <td>{site.provinceID}</td>
-          </tr>
-          <tr>
-            <td>Postal Code:</td>
-            <td>{site.postalCode}</td>
-          </tr>
-          <tr>
-            <td>Phone:</td>
-            <td>{site.phone}</td>
-          </tr>
-          <tr>
-            <td>Day of Week:</td>
-            <td>{site.dayOfWeek}</td>
-          </tr>
-          <tr>
-            <td>Distance From Warehouse:</td>
-            <td>{site.distanceFromWH}</td>
-          </tr>
-          <tr>
-            <td>Site Type:</td>
-            <td>{site.siteType}</td>
-          </tr>
-          <tr>
-            <td>Notes:</td>
-            <td>{site.notes}</td>
-          </tr>
-          <tr>
-            <td>Active:</td>
-            <td>{site.active ? 'Yes' : 'No'}</td>
-          </tr>
-        </tbody>
-      </Table>
+    <div> 
+    {showInitial ? <SiteDetailsTable site={site}  setSelectedOrder={setSelectedOrder} /> : <EditSite setShowInitial={setShowInitial} site={site} setSelectedOrder={setSelectedOrder} />}
+    <button className='hiddenClass' onClick={toggleComponent}>Edit Site</button>
     </div>
   );
 };

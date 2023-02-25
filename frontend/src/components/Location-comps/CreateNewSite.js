@@ -9,7 +9,7 @@ function AddSitePage({user, setUser}) {
   const [site, setSite] = useState({
     active: true,
     address: '',
-    address2: '',
+    address2: null,
     city: '',
     country: '',
     dayOfWeek: '',
@@ -56,7 +56,12 @@ function AddSitePage({user, setUser}) {
   }
 
   function handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault() ;
+    let temp = parseInt(site.distanceFromWH);
+    setSite(prevSite => ({
+      ...prevSite,
+      ["distanceFromWH"]: temp,
+    }));
     fetch('http://localhost:8000/site/add/site', {
       method: 'POST',
       headers: {
@@ -71,7 +76,7 @@ function AddSitePage({user, setUser}) {
 
   return (
     <div>
-      <h1>Add Site</h1>
+      <h1>Add Site</h1>-
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="name">Name:</label>
@@ -80,10 +85,6 @@ function AddSitePage({user, setUser}) {
         <div>
           <label htmlFor="address">Address:</label>
           <input type="text" name="address" id="address" value={site.address} onChange={handleInputChange} />
-        </div>
-        <div>
-          <label htmlFor="address2">Address2:</label>
-          <input type="text" name="address2" id="address2" value={site.address2} onChange={handleInputChange} />
         </div>
         <div>
           <label htmlFor="city">City:</label>
@@ -138,7 +139,7 @@ function AddSitePage({user, setUser}) {
         </div>
         <div>
           <label htmlFor="distanceFromWH">Distance From Warehouse:</label>
-          <input type="number" name="distanceFromWH" id="distanceFromWH" value={site.distanceFromWH} onChange={handleInputChange} />
+          <input type="number" name="distanceFromWH" min={0} max={500}  id="distanceFromWH" value={site.distanceFromWH} onChange={handleInputChange} />
         </div>
         <div>
           <label htmlFor="notes">Notes:</label>
