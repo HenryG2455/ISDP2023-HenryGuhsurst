@@ -22,6 +22,11 @@ export class ItemController {
     return this.itemService.findOne(+id);
   }
 
+  @Post('get/orderitems')
+  findMany( @Body() itemIds: number[]) {
+    return this.itemService.findMany(itemIds);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
     return this.itemService.update(+id, updateItemDto);

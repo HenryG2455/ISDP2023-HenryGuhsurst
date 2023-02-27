@@ -1,5 +1,4 @@
 import React,{useState,useEffect} from 'react';
-import Table from 'react-bootstrap/Table';
 import EditSite from './EditSite';
 import SiteDetailsTable from './SiteDetailsTable';
 import  { constants } from '../../data/Constants'
@@ -24,7 +23,7 @@ const SiteDetails = ({ user, site, setSelectedOrder }) => {
   return (
     <div> 
     {showInitial ? <SiteDetailsTable site={site}  setSelectedOrder={setSelectedOrder} /> : <EditSite setShowInitial={setShowInitial} site={site} setSelectedOrder={setSelectedOrder} />}
-    <button className='hiddenClass' onClick={toggleComponent}>Edit Site</button>
+    <button className={hiddenClass} onClick={toggleComponent}>Edit Site</button>
     </div>
   );
 };

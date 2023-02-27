@@ -6,8 +6,7 @@ import Orders from './Tab-comps/Orders'
 
 function NavTabs({tempUser}) {
     const [key, setKey] = useState('orders');
-    const [curUser, setCurUser] = useState(null)
-    let res;
+    const [curUser, setCurUser] = useState(null);
     useEffect(()=>{
         //console.log(tempUser);
     },[curUser])

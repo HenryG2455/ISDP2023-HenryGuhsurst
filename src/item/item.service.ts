@@ -24,6 +24,22 @@ export class ItemService {
   findOne(id: number) {
     return `This action returns a #${id} item`;
   }
+  
+  async findMany(ids: number[]) {
+    try {
+      const items = await this.prisma.item.findMany({
+        where:{
+          itemID:{
+            in: ids
+          }
+        }
+      });
+      return items;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
   update(id: number, updateItemDto: UpdateItemDto) {
     return `This action updates a #${id} item`;

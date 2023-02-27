@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import { useNavigate} from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
-import App from '../App';
 
 const salt = bcrypt.genSaltSync(11);
 let res;

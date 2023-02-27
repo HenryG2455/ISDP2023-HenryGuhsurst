@@ -16,5 +16,4 @@ export class UpdateSiteDto extends PartialType(CreateSiteDto) {
     active: boolean;
     provinceID: string;
     siteType: string;
-
 }

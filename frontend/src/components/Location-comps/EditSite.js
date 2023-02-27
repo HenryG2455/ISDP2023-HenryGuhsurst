@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from 'react'
 
 
-function EditSite({ site, setShowInitial, setSelectedOrde }) {
+function EditSite({ site, setShowInitial, setSelectedOrder }) {
   const [editedSite, setEditedSite] = useState(site);
   const [provinces, setProvinces] = useState([]);
   const [siteTypes, setSiteTypes] = useState([]);
@@ -62,6 +62,10 @@ function EditSite({ site, setShowInitial, setSelectedOrde }) {
       <div>
         <label htmlFor="address">Address:</label>
         <input type="text" name="address" id="address" value={editedSite.address} onChange={handleInputChange}/>
+      </div>
+      <div>
+        <label htmlFor="address2">Address2:</label>
+        <input type="text" name="address2" id="address2" value={editedSite.address2 == null? '' : editedSite.address2} onChange={handleInputChange}/>
       </div>
       <div>
         <label htmlFor="city">City:</label>

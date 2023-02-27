@@ -17,7 +17,7 @@ export class SiteService {
       const data:Prisma.siteCreateInput = {
         name,
         address,
-        address2:null,
+        address2,
         city,
         country,
         postalCode,
@@ -62,7 +62,7 @@ export class SiteService {
     const data:Prisma.siteUpdateInput = {
       name,
       address,
-      address2:null,
+      address2,
       city,
       country,
       postalCode,

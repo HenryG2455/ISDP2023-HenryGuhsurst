@@ -72,7 +72,9 @@ export class TxnService {
     try {
       const orders = await this.prisma.txn.findMany({
         where: {
-          txnType: 'Store Order'   
+          txnType: {
+            in: ['Back Order','Store Order','Supplier Order']
+          } 
         },
         include:{
           site_txn_siteIDFromTosite:true,

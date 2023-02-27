@@ -19,7 +19,7 @@ export class InventoryService {
     }
     
   }
-  async findOne(id: number) {
+  async findStoreInv(id: number) {
     try {
       const items = await this.prisma.inventory.findMany({
         where:{
