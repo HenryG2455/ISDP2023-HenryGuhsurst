@@ -111,7 +111,13 @@ function NewStoreOrder({user, sites , setShowComponent}) {
         itemID,
         quantity
       }));
-      const txnItems = tmpItems.map(item => ({...item, quantity: +item.quantity}));
+
+      const notInInvItems = tmpItems.map(obj => {
+        const { itemID, ...rest } = obj; // Destructure object to get old field and rest of object
+        return { ItemID: itemID, ...rest }; // Create new object with updated field name
+    });
+      console.log(notInInvItems);
+      const txnItems = notInInvItems.map(item => ({...item, quantity: +item.quantity}));
       console.log(txn);
       console.log(txnItems);
       fetch('http://localhost:8000/txn/storeOrder/new', {

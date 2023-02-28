@@ -5,6 +5,7 @@ import { txnitems, txn, Prisma} from "@prisma/client";
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTxnitemDto } from 'src/txnitems/dto/create-txnitem.dto';
 import Enumerable from 'linq';
+import {constants,txnTypes,txnStatus} from '../data/Constants.js';
 
 
 @Injectable()
@@ -18,7 +19,7 @@ export class TxnService {
     // Add the txnItems object to the txnItems table
     const txnItems = createTxnItems.map((dto) => ({
       // Map the DTO fields to the Prisma fields
-      ItemID: dto.itemID,
+      ItemID: dto.ItemID,
       quantity: dto.quantity,
     })) as Prisma.txnitemsCreateManyTxnInput[];
     //const txnItemsEnumerable = Enumerable.from(txnItems);
@@ -68,6 +69,8 @@ export class TxnService {
   findAll() {
     return `This action returns all txn`;
   }
+
+
   async findAllOrders() {
     try {
       const orders = await this.prisma.txn.findMany({
@@ -92,9 +95,147 @@ export class TxnService {
   findOne(id: number) {
     return `This action returns a #${id} txn`;
   }
+  
 
-  update(id: number, updateTxnDto: UpdateTxnDto) {
-    return `This action updates a #${id} txn`;
+  async updateStoreOrder(id: number, updateTxnDto: UpdateTxnDto, removedItems: any) {
+    let {siteIDTo, siteIDFrom, status, shipDate, txnType, barCode, createdDate, deliveryID, emergencyDelivery} = updateTxnDto
+    shipDate = new Date(shipDate);
+    createdDate= new Date(createdDate);
+    const txnItems = removedItems.map((dto) => ({
+      // Map the DTO fields to the Prisma fields
+      ItemID: dto.itemID,
+      quantity: dto.quantity,
+    })) as Prisma.txnitemsCreateManyTxnInput[];
+    const data:Prisma.txnUpdateInput = {
+      site_txn_siteIDToTosite: {
+        connect: {
+          siteID: siteIDTo
+        },
+      },
+      site_txn_siteIDFromTosite:{
+        connect: {
+          siteID: siteIDFrom
+        },
+      },
+      txnstatus:{
+        connect: {
+          statusName: status
+        },
+      },
+      shipDate,
+      txntype:{
+        connect: {
+          txnType: txnType
+        },
+      },
+      barCode,
+      createdDate,
+      delivery:{
+        connect: {
+          deliveryID: deliveryID
+        },
+      },
+      emergencyDelivery,
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    await this.prisma.txnitems.deleteMany({
+      where: {
+        OR: removedItems,
+      },
+    });
+    return txn;
+
+  }
+  
+  async porcessOrder(id: number) {
+    const data:Prisma.txnUpdateInput = {
+      txnstatus:{
+        connect: {
+					statusName: txnStatus.PROCESSING
+				},
+      },
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
+  }
+
+
+  async updateBackOrder(id: number, txn :any, txnitems:any) {
+    const data:Prisma.txnUpdateInput = {
+      txnstatus:{
+        connect: {
+					statusName: txnStatus.PROCESSING
+				},
+      },
+    }
+    const temptxn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
+  }
+
+
+
+  async readyOrder(id: number,  updateTxnDto: UpdateTxnDto) {
+    let {siteIDTo, siteIDFrom, status, shipDate, txnType, barCode, createdDate, deliveryID, emergencyDelivery} = updateTxnDto
+    shipDate = new Date(shipDate);
+    createdDate= new Date(createdDate);
+    const data:Prisma.txnCreateInput = {
+      site_txn_siteIDToTosite: {
+				connect: {
+          siteID: siteIDTo
+				},
+			},
+      site_txn_siteIDFromTosite:{
+				connect: {
+					siteID: siteIDFrom
+				},
+			},
+      txnstatus:{
+        connect: {
+					statusName: status
+				},
+      },
+      shipDate,
+      txntype:{
+        connect: {
+          txnType: txnType
+        },
+      },
+      barCode,
+      createdDate,
+      delivery:{
+        connect: {
+          deliveryID: deliveryID
+        },
+      },
+      emergencyDelivery,
+      txnitems:{
+        connect:{
+
+        }
+      },
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
   }
 
   remove(id: number) {

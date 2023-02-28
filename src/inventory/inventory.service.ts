@@ -32,8 +32,19 @@ export class InventoryService {
     }
   }
 
-  update(id: number, updateInventoryDto: UpdateInventoryDto) {
-    return `This action updates a #${id} inventory`;
+  async update(id: number, updateInventoryDto:any) {
+    const itemIdsAndSiteIds = updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID }));
+    const updatedInventoryItems = await this.prisma.inventory.updateMany({
+      where: {
+        OR: itemIdsAndSiteIds.map(id => ({ itemID:id.itemID, siteID: id.siteID })),
+      },
+      data: {
+        itemLocation: { set: updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID, itemLocation:item.itemLocation })).find(item => item).itemLocation },
+        quantity: { set: updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID, quantity: item.quantity})).find(item => item).quantity },
+        reorderThreshold: { set: updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID, reorderThreshold:item.reorderThreshold})).find(item => item).reorderThreshold },
+      }
+    });
+    return updatedInventoryItems;
   }
 
   remove(id: number) {

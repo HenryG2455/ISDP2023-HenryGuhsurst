@@ -22,6 +22,13 @@ export class InventoryController {
     return this.inventoryService.findStoreInv(+id);
   }
 
+  @Post('update/:id')
+  updateStoreInv(@Param('id') id: string, @Body() updateInventoryDto: any) {
+    console.log(updateInventoryDto.updateInventoryDto);
+    return this.inventoryService.update(+id, updateInventoryDto.updateInventoryDto);
+  }
+
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
     return this.inventoryService.update(+id, updateInventoryDto);

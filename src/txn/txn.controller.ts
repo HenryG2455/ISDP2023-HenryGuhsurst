@@ -7,12 +7,7 @@ import { UpdateTxnDto } from './dto/update-txn.dto';
 export class TxnController {
   constructor(private readonly txnService: TxnService) {}
 
-  @Post('storeOrder/new')
-  create(@Body() createTxnDto: any) {
-    let txn =createTxnDto.txn;
-    let txnItems = createTxnDto.txnItems
-    return this.txnService.create(txn,txnItems);
-  }
+  
 
   @Get()
   findAll() {
@@ -29,9 +24,45 @@ export class TxnController {
     return this.txnService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTxnDto: UpdateTxnDto) {
-    return this.txnService.update(+id, updateTxnDto);
+  @Post('storeOrder/update/:id')
+  updateStoreOrder(@Param('id') id: string,@Body() updateinfo: any) {
+    let txn =updateinfo.txn;
+    let removedItems = updateinfo.removedItems;
+    return this.txnService.updateStoreOrder(+id,txn, removedItems);
+  }
+
+  @Post('storeOrder/new')
+  create(@Body() createTxnDto: any) {
+    let txn =createTxnDto.txn;
+    let txnItems = createTxnDto.txnItems
+    console.log(txn)
+    console.log(txnItems)
+    return this.txnService.create(txn,txnItems);
+  }
+
+
+  @Post('backOrder/new')
+  createBackOrder(@Body() createTxnDto: any) {
+    let txn =createTxnDto.txn;
+    let txnItems = createTxnDto.txnItems
+    return this.txnService.create(txn,txnItems);
+  }
+
+  @Post('backOrder/update/:id')
+  updateBackOrder(@Param('id') id:string, @Body() createTxnDto: any) {
+    let txn =createTxnDto.txn;
+    let txnItems = createTxnDto.txnItems
+    return this.txnService.updateBackOrder(+id,txn,txnItems);
+  }
+
+  @Post('process/order/:id')
+  porcessOrder(@Param('id') id: string) {
+    return this.txnService.porcessOrder(+id);
+  }
+
+  @Post('ready/order/:id')
+  readyOrder(@Param('id') id: string, @Body() updateTxnDto: UpdateTxnDto) {
+    return this.txnService.readyOrder(+id,updateTxnDto);
   }
 
   @Delete(':id')

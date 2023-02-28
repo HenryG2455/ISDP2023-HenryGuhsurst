@@ -4,6 +4,7 @@ import NewStoreOrder from './Order-comps/NewStoreOrder';
 import { constants,txnStatus} from '../../../data/Constants'
 import '../../Main.css';
 import RecieveOrders from './Order-comps/RecieveOrders';
+import OrdersToFulfill from './Order-comps/Fulfil-comps/OrdersToFulfill';
 
 function Orders({user})  {
     const hidden =  ' hidden';
@@ -17,6 +18,9 @@ function Orders({user})  {
     const [showComponent, setShowComponent] = useState(true);
     const [sites, setSites] = useState([]);
     const [ordersNeedingToBeRecieved, setOrdersNeedingToBeRecieved] = useState([]);
+    const [ordersNeedingToBeFulfilled, setOrdersNeedingToBeFulfilled] = useState([]);
+    const [showFulfill, setShowFulfill] = useState(false);
+    const [globalOrders, setGlobalOrders] = useState([]);
 
     useEffect(()=>{
       console.log(curUser);
@@ -46,12 +50,56 @@ function Orders({user})  {
         }
       })
       .then(tempOrders => {
+        setGlobalOrders(tempOrders);
         canMakeOrder(tempOrders);
+        checkForProcessing(tempOrders);
         console.log(tempOrders);
       })
       .catch(error => {
         console.log('There was an error', error);
       });
+    }
+
+    const  checkForProcessing = (orders) => {
+      let temp = [];
+      orders.filter(order => order.status === txnStatus.PROCESSING).forEach(order => { temp.push(order)});
+      //console.log(temp)
+      setOrdersNeedingToBeFulfilled(temp);
+    }
+
+
+    function canMakeOrder(orders){
+      if(user.user_permission.find(permission => permission.permissionID === constants.CREATESTOREORDER)){
+        console.log(typeof orders);
+        if(user.posn.permissionLevel === constants.STORE_MANAGER){
+          setHiddenNameSO(" ");
+          const userOrders = [];
+          orders.forEach(order => {
+            if (order.siteIDFrom === user.siteID || order.siteIDTo === user.siteID) {
+              userOrders.push(order);
+            }
+          });
+          userOrders.forEach(order => {
+            if (order.status === txnStatus.SUBMITTED || order.status === txnStatus.NEW) {
+              setHiddenNameSO(hidden);
+            }else{
+              setHiddenNameSO(" ");
+            }
+          });
+          setOrders(userOrders);
+        }else{
+          setOrders(orders);
+        }
+      }else if(user.posn.permissionLevel === constants.WAREHOUSE_MANAGER){
+        if(user.user_permission.find(permission => permission.permissionID === constants.FULFILSTOREORDER)){
+          setShowFulfill(true);
+        }
+        isWarhouseManager(orders);
+      }else if(user.posn.permissionLevel === constants.WAREHOUSE_EMPLOYEE  && user.user_permission.find(permission => permission.permissionID === constants.FULFILSTOREORDER)){
+        setShowFulfill(true);
+      }
+      else{setOrders(orders);}
+
     }
 
     function isWarhouseManager(orders){
@@ -78,34 +126,7 @@ function Orders({user})  {
       }
     }
 
-    function canMakeOrder(orders){
-      if(user.user_permission.find(permission => permission.permissionID === constants.CREATESTOREORDER)){
-        console.log(typeof orders);
-        if(user.posn.permissionLevel === constants.STORE_MANAGER){
-          setHiddenNameSO(" ");
-          const userOrders = [];
-          orders.forEach(order => {
-            if (order.siteIDFrom === user.siteID || order.siteIDTo === user.siteID) {
-              userOrders.push(order);
-            }
-          });
-          userOrders.forEach(order => {
-            if (order.status === txnStatus.SUBMITTED || order.status === txnStatus.NEW) {
-              setHiddenNameSO(hidden);
-            }else{
-              setHiddenNameSO(" ");
-            }
-          });
-          setOrders(userOrders);
-        }else{
-          setOrders(orders);
-        }
-      }else if(user.posn.permissionLevel === constants.WAREHOUSE_MANAGER){
-        isWarhouseManager(orders);
-      }else{
-        setOrders(orders);
-      }
-    }
+    
 
     function handleRecieveOrders(){
       setHiddenNameSO(hidden);
@@ -126,6 +147,10 @@ function Orders({user})  {
       
       {ordersNeedingToBeRecieved.length > 0 && (
         <RecieveOrders orders={ordersNeedingToBeRecieved}  user={curUser} />
+      )}
+
+      {showFulfill && (
+        <OrdersToFulfill globalOrders={globalOrders} orders={ordersNeedingToBeFulfilled} user={curUser} />
       )}
       
 

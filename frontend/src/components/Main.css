@@ -18,9 +18,17 @@
     border: thin solid darkgray;
     margin: 3px 1px;
 }
+.table-itemcontainer{
+    max-height: 300px !important; /* set a fixed height */
+    overflow: auto !important;
+    border: thin solid darkgray;
+}
 .orderInput{
     width: 43px;
 }
+
+
+
 #radioBtn{
     position: absolute; /* position absolutely within parent */
     right: 0;
@@ -42,4 +50,7 @@
     position: absolute; /* position absolutely within parent */
     right: 0;
     top:1rem;
+}
+.blue{
+    background-color: lightblue !important;
 }

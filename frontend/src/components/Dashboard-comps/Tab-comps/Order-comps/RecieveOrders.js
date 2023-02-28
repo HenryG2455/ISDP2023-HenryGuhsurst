@@ -27,6 +27,7 @@ function RecieveOrders({user,orders}) {
     },[user])
     useEffect(()=>{
         if(orders){
+            setAllOrders(orders);
             fetch('http://localhost:8000/inventory/'+user.siteID)
             .then(response => response.json())
             .then(data => {
@@ -36,12 +37,7 @@ function RecieveOrders({user,orders}) {
         }
     },[orders])
 
-    useEffect(() => {
-        if(orders){
-            setAllOrders(orders);
-            permissions();
-        }
-    },[orders]);
+  
 
     function permissions(){
     }
@@ -81,7 +77,7 @@ function RecieveOrders({user,orders}) {
           {selectedOrder.txnID === order.txnID && (
             <tr>
               <td colSpan="6">
-                <ViewRecieveOrder order={selectedOrder} wharehouseInv={wharehouseInv} setSelectedOrder={setSelectedOrder}/>
+                <ViewRecieveOrder allOrders={allOrders} setAllOrders={setAllOrders} order={selectedOrder} wharehouseInv={wharehouseInv} setSelectedOrder={setSelectedOrder}/>
               </td>
             </tr>
           )}
