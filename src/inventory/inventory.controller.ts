@@ -25,13 +25,13 @@ export class InventoryController {
   @Post('update/:id')
   updateStoreInv(@Param('id') id: string, @Body() updateInventoryDto: any) {
     console.log(updateInventoryDto.updateInventoryDto);
-    return this.inventoryService.update(+id, updateInventoryDto.updateInventoryDto);
+    return this.inventoryService.updateMany(+id, updateInventoryDto.updateInventoryDto);
   }
 
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
-    return this.inventoryService.update(+id, updateInventoryDto);
+  @Post('update/single/:id')
+  update(@Param('id') id: string, @Body() updateInventoryDto: any) {
+    return this.inventoryService.updateOne(+id, updateInventoryDto.item);
   }
 
   @Delete(':id')

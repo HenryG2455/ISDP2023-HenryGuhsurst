@@ -19,6 +19,7 @@ function NewStoreOrder({user, sites , setShowComponent}) {
     const [locations, setLocations] = useState([]);
     const [selectedButton, setSelectedButton] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
+    const [inventory, setInventory] = useState(null);
 
     const Days = {SUNDAY:0, MONDAY:1, TUESDAY:2,WEDNESDAY:3, THURSDAY:4, FRIDAY:5, SATURDAY:6};
     //const [allSites, setSites] = useState([]);
@@ -35,6 +36,12 @@ function NewStoreOrder({user, sites , setShowComponent}) {
     useEffect(()=>{
       if(sites && user){
         sitePermission(sites)
+        fetch('http://localhost:8000/inventory/'+user.siteID)
+            .then(response => response.json())
+            .then(data => {
+              setInventory(data);
+              //console.log(data);
+            });
       }
     },[sites, user])
 
@@ -134,12 +141,11 @@ function NewStoreOrder({user, sites , setShowComponent}) {
         return response.json();
       })
       .then(data => {
-        
         setFilteredItems(items)
         setSelectedItems([]);
         setSelectedLocation('');
         console.log(data);
-        navigate('/home');
+        window.location.reload();
       })
       .catch(error => {
         setFilteredItems(items)
@@ -184,6 +190,13 @@ function NewStoreOrder({user, sites , setShowComponent}) {
         </option>])
       }
     };
+
+    const findQuantity = (itemId) => {
+      const inventoryItem = inventory.find(item => item.itemID === itemId);
+      return inventoryItem ? inventoryItem.quantity : 0;
+    };
+
+
     return (
       <div id="mainPageContainer">
         <form onSubmit={handleSubmit}>
@@ -215,7 +228,7 @@ function NewStoreOrder({user, sites , setShowComponent}) {
                       <tr key={item.itemID} onClick={() => handleRowClick(item.itemID)} className={selectedRow === item.itemID ? " selected" : ""}>
                           <td>{item.itemID}</td>
                           <td>{item.name}</td>
-                          <td>{item.weight}</td>
+                          <td>{inventory === null? 0: findQuantity(item.itemID)}</td>
                           <td>{item.caseSize}</td>
                           <td><input className='orderInput' type="number" defaultValue={tempCases} min={0} max={99} onChange={handleChange}/></td>
                           <td><Button disabled={selectedRow !== item.itemID} onClick={() => {handleAddItem(item); }}>Add</Button></td>

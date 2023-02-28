@@ -32,7 +32,7 @@ export class InventoryService {
     }
   }
 
-  async update(id: number, updateInventoryDto:any) {
+  async updateMany(id: number, updateInventoryDto:any) {
     const itemIdsAndSiteIds = updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID }));
     const updatedInventoryItems = await this.prisma.inventory.updateMany({
       where: {
@@ -46,6 +46,17 @@ export class InventoryService {
     });
     return updatedInventoryItems;
   }
+
+  //createMany(createInventoryDto: CreateInventoryDto[]) {
+
+  async updateOne(siteID: number, data: any) {
+    const updatedItem = await this.prisma.inventory.update({
+      where: {  itemID_siteID: {itemID: data.itemID, siteID: siteID } },
+      data,
+    });
+    return updatedItem;
+  }
+  
 
   remove(id: number) {
     return `This action removes a #${id} inventory`;

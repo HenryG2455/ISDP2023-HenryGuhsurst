@@ -28,7 +28,7 @@ function RecieveOrders({user,orders}) {
     useEffect(()=>{
         if(orders){
             setAllOrders(orders);
-            fetch('http://localhost:8000/inventory/'+user.siteID)
+            fetch('http://localhost:8000/inventory/'+1)
             .then(response => response.json())
             .then(data => {
             setWharehouseInv(data);

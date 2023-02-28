@@ -18,6 +18,13 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
     let tempPallet = [];
     let temp = [];
     let tempOrder ={};
+    
+
+    useEffect(() => {
+        if(user){
+            console.log(user)
+        }
+    },[user])
 
     useEffect(() => {
         if(order){
@@ -28,6 +35,7 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
     //this useEffect is to get the items from the order and check if they are in the wharehouse inventory
     useEffect(()=>{
         if(wharehouseInv){
+            console.log(wharehouseInv)
             if(theOrder !== null){
                 let itemIDs = [];
                 console.log(order);
@@ -208,7 +216,7 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                 //This is to update the inventory
                 //
                 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                fetch('http://localhost:8000/inventory/update/'+invUpdateitems[0].siteID, {
+                fetch('http://localhost:8000/inventory/update/'+2, {
                     method: 'POST',
                     headers: {
                     'Content-Type': 'application/json'

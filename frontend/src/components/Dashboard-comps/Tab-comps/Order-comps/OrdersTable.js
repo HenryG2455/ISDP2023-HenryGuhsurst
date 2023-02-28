@@ -30,6 +30,7 @@ function OrdersTable({orders , user })  {
 
     useEffect(() => {
         if(orders){
+          console.log(orders)
           const sortedArray = orders.slice().sort((obj1, obj2) => {
             if (obj1.status === 'SUBMITTED') {
               return -1;

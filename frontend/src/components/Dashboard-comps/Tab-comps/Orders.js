@@ -97,8 +97,11 @@ function Orders({user})  {
         isWarhouseManager(orders);
       }else if(user.posn.permissionLevel === constants.WAREHOUSE_EMPLOYEE  && user.user_permission.find(permission => permission.permissionID === constants.FULFILSTOREORDER)){
         setShowFulfill(true);
+        setOrders(orders);
       }
-      else{setOrders(orders);}
+      else{
+        setOrders(orders);
+      }
 
     }
 
