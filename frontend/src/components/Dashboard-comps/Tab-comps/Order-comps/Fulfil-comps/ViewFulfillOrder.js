@@ -61,8 +61,9 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                         return false;
                     });
                     const notInInvItems = tempNotInInvItems.map(obj => {
-                        const { ItemID, ...rest } = obj; // Destructure object to get old field and rest of object
-                        return { ItemID: ItemID, ...rest }; // Create new object with updated field name
+                        const { ItemID, quantity, ...rest } = obj; // Destructure object to get old field and rest of object
+                        const matchingItem = wharehouseInv.find(invItem => invItem.itemID ===ItemID);
+                        return { ItemID: ItemID, quantity: quantity-matchingItem.quantity , ...rest }; // Create new object with updated field name
                     });
                     console.log(notInInvItems);
                     
@@ -99,9 +100,6 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
     const Days = {SUNDAY:0, MONDAY:1, TUESDAY:2,WEDNESDAY:3, THURSDAY:4, FRIDAY:5, SATURDAY:6};
 
     const handleProcessOrder = () => {
-        let backOrder;
-        let updatedInventory;
-        let updatedOrder;
         //console.log(pallet);
         const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const siteDeliveryDay = Days[user.site.dayOfWeek];
@@ -164,6 +162,7 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                 emergencyDelivery: reformedOrder.emergencyDelivery,
                 txnitems: itemForBackOrder
             }
+            console.log(tempCreatetxnBackOrder)
             txnBackOrder = tempCreatetxnBackOrder;
         }
         let tempInv = wharehouseInv;
@@ -175,28 +174,62 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
             }
         })
 
-        let invUpdateitems=[]
-        tempInv.forEach(inv2Item => {
-            const matchingItem = wharehouseInv.find(item => item.ItemID === inv2Item.ItemID);
-            if (matchingItem) {
-                if(inv2Item.quantity === matchingItem.quantity){
-                    console.log(inv2Item)
-                    invUpdateitems.push(inv2Item);
-                }
+        let updatedStoreOrder = txnUpdateOrder;
+
+
+
+
+        for (let i = 0; i < updatedStoreOrder.txnitems.length; i++) {
+            updatedStoreOrder.txnitems[i]['itemID'] = updatedStoreOrder.txnitems[i]['ItemID'];
+            delete updatedStoreOrder.txnitems[i]['ItemID'];
+        }
+          
+        //This is to update the inventory
+        console.log(updatedStoreOrder)
+        const newInv = updatedStoreOrder.txnitems.map((txnitem) => {
+            const item = tempInv.find((i) => i.itemID === txnitem.itemID);
+            console.log(item)
+            if (item) {
+              return {
+                itemID: item.itemID,
+                siteID: item.siteID,
+                quantity: item.quantity,
+                itemLocation: item.itemLocation,
+                reorderThreshold: item.reorderThreshold,
+              };
             }
         });
+        let updateInvBackOrder=[];
+        if(itemForBackOrder.length > 0){
+            itemForBackOrder.forEach(item => {
+                updateInvBackOrder.push({
+                    itemID: item.ItemID,
+                    siteID: 1,
+                    quantity: 0,
+                    itemLocation: 'Stock',
+                    reorderThreshold: 25,
+                })
+            })
+        }
+        console.log(newInv)
+        console.log(updateInvBackOrder)
 
-        //This is to update the inventory
-        console.log(invUpdateitems)
+        const finalInvForUpdate = [...newInv, ...updateInvBackOrder];
+        console.log(finalInvForUpdate)
+        
+
+
+        //console.log(invUpdateitems)
         console.log(tempInv)
         console.log(txnBackOrder)
-        console.log(txnUpdateOrder)
         console.log(allItemsFromOriginalOrder)
-        console.log(itemForBackOrder.length);
-
+        console.log(itemForBackOrder);
+        console.log(txnUpdateOrder)
+        console.log(updatedStoreOrder.txnitems);
+        const invCreate = updatedStoreOrder.txnitems;
+        
         //This is to update the store order with the items and set to ready
-                //
-                //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         fetch('http://localhost:8000/txn/storeOrder/update/'+reformedOrder.txnID, {
             method: 'POST',
             headers: {
@@ -212,16 +245,23 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
         })
         .then(data => {
             console.log(data);
-            
+                /*
+                These Fetches are a series of updates to teh database mostly around updateing the inventory count for
+                warehouse after teh items have been gathered and added to the Stoer order.
+                
+                As the inventory is being update we crete a new inventory for 
+
+
+                    
+                */
                 //This is to update the inventory
-                //
                 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 fetch('http://localhost:8000/inventory/update/'+2, {
                     method: 'POST',
                     headers: {
                     'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({updateInventoryDto: invUpdateitems})
+                    body: JSON.stringify({updateInventoryDto: itemForBackOrder.length<1?newInv:finalInvForUpdate , createInventoryDto: invCreate })
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -234,6 +274,7 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                     console.log(itemForBackOrder.length);
                     //Creates back Order
                     if(itemForBackOrder.length>0){
+
                         let URL = 'http://localhost:8000/txn/';
                         if(backOrderExists){
                             URL += 'backOrder/update/'+reformedOrder.txnID;
@@ -272,9 +313,6 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
                 });
-                
-                
-
         })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error);
@@ -282,13 +320,6 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
 
 
         //this 
-        
-
-        
-
-
-
-
     };
 
     const itemTableColumns = ['ItemID', 'Description', 'Qty', 'Avail','Added?'];

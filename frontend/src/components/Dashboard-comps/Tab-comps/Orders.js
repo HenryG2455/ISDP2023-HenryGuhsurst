@@ -44,7 +44,7 @@ function Orders({user})  {
       fetch('http://localhost:8000/txn/orders/getall')
       .then(res => {
         if (!res.ok) {
-          setErrorText("Something went Wrong");
+          throw Error('Could not fetch the data for that resource');
         } else {
           return res.json();
         }
@@ -67,9 +67,11 @@ function Orders({user})  {
       setOrdersNeedingToBeFulfilled(temp);
     }
 
-
+    //this function checks if the user is a warehouse manager and if they are it will check if they have the permission to recieve orders
     function canMakeOrder(orders){
+      console.log(orders);
       if(user.user_permission.find(permission => permission.permissionID === constants.CREATESTOREORDER)){
+        setHiddenNameSO(" ");
         console.log(typeof orders);
         if(user.posn.permissionLevel === constants.STORE_MANAGER){
           setHiddenNameSO(" ");
@@ -98,6 +100,9 @@ function Orders({user})  {
       }else if(user.posn.permissionLevel === constants.WAREHOUSE_EMPLOYEE  && user.user_permission.find(permission => permission.permissionID === constants.FULFILSTOREORDER)){
         setShowFulfill(true);
         setOrders(orders);
+      }
+      else if(false){
+
       }
       else{
         setOrders(orders);

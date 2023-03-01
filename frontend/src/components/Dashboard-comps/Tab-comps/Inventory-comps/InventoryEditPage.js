@@ -6,6 +6,19 @@ function InventoryEditPage({ user, invForEdit }) {
     let res;
   const [inventory, setInventory] = useState(invForEdit);
   const [curUser, setCurUser] = useState(null);
+  const [searchText, setSearchText] = useState('');
+
+  const handleSearch = (event) => {
+    const text = event.target.value.toLowerCase();
+    const filtered = inventory.filter(item =>
+      item.itemID.includes(parseInt(text)) ||
+      item.name.toLowerCase().includes(text) ||
+      item.description.toLowerCase().includes(text) ||
+      item.category.toLowerCase().includes(text)
+    );
+    setSearchText(text);
+    setInventory(filtered);
+}
 
   const handleThresholdChange = (itemId, event) => {
     const updatedInventory = inventory.map(item => {
@@ -57,6 +70,7 @@ function InventoryEditPage({ user, invForEdit }) {
     <div>
       <h2>Inventory Edit Page</h2>
       <p>Hello - {curUser != null ? curUser.username || res() : ''}</p>
+      <input type="text" placeholder="Search items" value={searchText} onChange={handleSearch} />
       <form onSubmit={handleSubmit}>
         <Table>
           <thead>

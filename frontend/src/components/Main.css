@@ -23,6 +23,12 @@
     overflow: auto !important;
     border: thin solid darkgray;
 }
+
+.table-invcontainer{
+    max-height: 600px !important; /* set a fixed height */
+    overflow: auto !important;
+    border: thin solid darkgray;
+}
 .orderInput{
     width: 43px;
 }

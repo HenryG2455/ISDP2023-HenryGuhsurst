@@ -8,6 +8,8 @@ export default function Navigation({ user, setUser }) {
     const [tempUser, setTempUser] = useState(null);
     const [crudName, setCrudName] = useState('');
     const [className2, setClassName2] = useState('');
+    const  [loggedOut, setLoggedOut] = useState(true);
+
     useEffect(() => {
         // Check For User
         //console.log(user);
@@ -19,7 +21,14 @@ export default function Navigation({ user, setUser }) {
         //console.log(user);
         if(user == null){
             setCrudName(' hidden');
+            
         }else{
+            let tempUser = localStorage.getItem("User");
+            //console.log(temp);
+            if(tempUser == null){
+                setLoggedOut(true);
+            }else{setLoggedOut(false);}
+            
             setCrudName('');
             setClassName2('');
             let crud =[];
@@ -45,9 +54,9 @@ export default function Navigation({ user, setUser }) {
     }
     return (
        <div className= 'navbar'>
-          <NavLink className= 'navlink' to="/">Dashboard</NavLink>
-          <NavLink className= 'navlink' to="/home">HomePage</NavLink>
-          <NavLink className= 'navlink' to="/locations">Site Locations</NavLink>
+          <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/">Dashboard</NavLink>
+          <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/home">HomePage</NavLink>
+          <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/locations">Site Locations</NavLink>
           <NavLink id='crud' className={crudName+' navlink'} to="/crud">Employee CRUD</NavLink>
           <a id='logout' className={className2} onClick={Logout}>Logout</a>
        </div>

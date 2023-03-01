@@ -15,7 +15,7 @@ function AddSitePage({user, setUser}) {
     dayOfWeek: '',
     distanceFromWH: 0,
     name: '',
-    notes: null,
+    notes: '',
     phone: '',
     postalCode: '',
     provinceID: '',
@@ -58,16 +58,19 @@ function AddSitePage({user, setUser}) {
   function handleSubmit(event) {
     event.preventDefault() ;
     let temp = parseInt(site.distanceFromWH);
-    setSite(prevSite => ({
-      ...prevSite,
-      ["distanceFromWH"]: temp,
-    }));
+    let tempSite = site;
+    tempSite={
+      ...tempSite,
+      postalCode: tempSite.postalCode.toUpperCase(),
+      distanceFromWH: temp,
+    };
+    console.log(tempSite);
     fetch('http://localhost:8000/site/add/site', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(site),
+      body: JSON.stringify(tempSite),
     })
       .then(response => response.json())
       .then(data => {console.log(data); navigate('/locations') })
@@ -103,7 +106,7 @@ function AddSitePage({user, setUser}) {
         </div>
         <div>
           <label htmlFor="postalCode">Postal Code:</label>
-          <input type="text" name="postalCode" id="postalCode" value={site.postalCode} onChange={handleInputChange} />
+          <input pattern="[A-Za-z][0-9][A-Za-z][0-9][A-Za-z][0-9]" type="text" name="postalCode" id="postalCode" value={site.postalCode} onChange={handleInputChange} />
         </div>
         <div>
           <label htmlFor="country">Country:</label>
@@ -111,7 +114,7 @@ function AddSitePage({user, setUser}) {
         </div>
         <div>
           <label htmlFor="phone">Phone:</label>
-          <input type="text" name="phone" id="phone" value={site.phone} onChange={handleInputChange} />
+          <input pattern='\d{3}\d{3}\d{4}' type="phone" name="phone" id="phone" value={site.phone} onChange={handleInputChange} />
         </div>
         <div>
           <label htmlFor="dayOfWeek">Day of Week:</label>
