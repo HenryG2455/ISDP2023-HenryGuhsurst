@@ -111,8 +111,9 @@ function NewStoreOrder({user, sites , setShowComponent}) {
         txnType:txnTypes.STORE_ORDER,
         barCode:barcode,
         createdDate: currentDate,
-        deliveryID: 1,
-        emergencyDelivery: selectedButton
+        deliveryID: null,
+        emergencyDelivery: selectedButton,
+        notes:""
       }
       const tmpItems = selectedItems.map(({ itemID, quantity }) => ({
         itemID,

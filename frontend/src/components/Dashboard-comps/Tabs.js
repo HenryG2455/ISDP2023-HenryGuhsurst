@@ -35,7 +35,7 @@ function NavTabs({tempUser}) {
         className="mb-3"
         >
         <Tab eventKey="orders" title="Orders">
-            <Orders user ={curUser}/>
+            <Orders setKey={setKey} user ={curUser}/>
         </Tab>
         <Tab eventKey="inventory" title="Inventory">
             <Inventory user ={curUser}/>

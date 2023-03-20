@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React,{useEffect, useState} from 'react'
 import Table from 'react-bootstrap/Table';
-import OrderDetails from './ViewOrder';
-import '../../../Main.css';
+import '../../../../Main.css';
+import AcceptDelivery from './AcceptDelivery';
 
-
-function OrdersTable({orders , user })  {
+function DeliveredOrders({orders,user, globalOrders}) {
     const [allOrders, setAllOrders] = useState([])
     const [selectedOrder, setSelectedOrder] = useState({});
     const [selectedRow, setSelectedRow] = useState(null);
+    const [siteInv, setSiteInv] = useState([]);
+    const [items, setItems] = useState([]);
+
 
     const handleRowClick = (id) => {
       setSelectedRow(id);
     };
-
+    
+    
 
     const handleView = (order) => {
         console.log(order);
@@ -20,50 +23,36 @@ function OrdersTable({orders , user })  {
     };
 
     useEffect(()=>{
-        console.log(user);
+        //console.log(user);
     },[user])
     useEffect(()=>{
-      const jsonString = JSON.stringify(orders);
-      //console.log(jsonString);
-        
-    },[orders])
-
-    useEffect(() => {
         if(orders){
-          console.log(orders)
-          const sortedArray = orders.slice().sort((obj1, obj2) => {
-            if (obj1.status === 'SUBMITTED') {
-              return -1;
-            }
-            if (obj2.status === 'SUBMITTED') {
-              return 1;
-            }
-            return 0;
-          });
-          const secondSortedArray = sortedArray.slice().sort((obj1, obj2) => {
-            if (obj1.status === 'READY') {
-              return -1;
-            }
-            if (obj2.status === 'READY') {
-              return 1;
-            }
-            return 0;
-          });
-            console.log(sortedArray)
-            setAllOrders(secondSortedArray);
-
-            permissions();
+            setAllOrders(orders);
+            fetch('http://localhost:8000/inventory/'+user.siteID)
+            .then(response => response.json())
+            .then(data => {
+            setSiteInv(data);
+            console.log(data);
+            });
         }
-    },[orders]);
+    },[orders])
+    useEffect(()=>{
+        //console.log(selectedOrder)
+    },[selectedOrder])
+  
 
     function permissions(){
     }
 
+    function handleDeliverOrders(order){
+        console.log(order);
+        setSelectedOrder(order);
+    }
 
   return (
-    <div className='table-container'>
-    <h4>All the Orders</h4>
-    <Table striped bordered hover >
+    <div>
+    <h4>Orders that have been Delivered</h4>
+    <Table striped bordered hover>
     <thead>
       <tr>
         <th>To</th>
@@ -85,13 +74,13 @@ function OrdersTable({orders , user })  {
             <td>{order.emergencyDelivery ? "Yes" : "No"}</td>
             <td>{order.txnID}</td>
             <td>
-              <button disabled={selectedRow !== order.txnID} onClick={() => handleView(order)}>View</button>
+                <button  onClick={() => {handleDeliverOrders(order); console.log(order);}}>Accept</button>
             </td>
           </tr>
           {selectedOrder.txnID === order.txnID && (
             <tr>
               <td colSpan="6">
-                <OrderDetails setSelectedOrder={setSelectedOrder} order={selectedOrder} />
+                <AcceptDelivery  user={user} allOrders={allOrders} setAllOrders={setAllOrders} order={selectedOrder} />
               </td>
             </tr>
           )}
@@ -103,4 +92,4 @@ function OrdersTable({orders , user })  {
   )
 }
 
-export default OrdersTable
+export default DeliveredOrders

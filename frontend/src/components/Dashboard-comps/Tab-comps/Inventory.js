@@ -48,6 +48,9 @@ function Inventory({user}) {
                 console.log(data);
             });
             setSelectedSite(user.siteID)
+            if(user.posn.positionID === 6){
+                setSelectedSite(2)
+            }
             console.log(user)
             userPermissions(user,user.siteID)
             setSelectedRow(user.siteID)
@@ -104,7 +107,10 @@ function Inventory({user}) {
         }else if(user.siteID !== tempSite){
             console.log('curUser DOES NOT match selected site')
             setEditButtonHidden(' hidden');
-
+            if(user.posn.permissionLevel === constants.ADMINISTRATOR){
+                console.log('curUser is an admin')
+                setEditButtonHidden('');
+            }
         }
     }
 

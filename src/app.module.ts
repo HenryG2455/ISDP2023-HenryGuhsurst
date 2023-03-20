@@ -14,9 +14,11 @@ import { TxnitemsModule } from './txnitems/txnitems.module';
 import { SiteModule } from './site/site.module';
 import { ProvinceModule } from './province/province.module';
 import { SitetypeModule } from './sitetype/sitetype.module';
+import { DeliveryModule } from './delivery/delivery.module';
+import { VehicleModule } from './vehicle/vehicle.module';
 
 @Module({
-  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule, PermissionModule, ItemModule, InventoryModule, SupplierModule, TxnitemsModule, SiteModule, ProvinceModule, SitetypeModule],
+  imports: [EmployeeModule, PosnModule, UserPermissionModule, TxnModule, TxnauditModule, PermissionModule, ItemModule, InventoryModule, SupplierModule, TxnitemsModule, SiteModule, ProvinceModule, SitetypeModule, DeliveryModule, VehicleModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -11,6 +11,8 @@ function InvItemDetails({ selectedItem, setSelectedItem }) {
     event.preventDefault();
     const updatedItem = { ...selectedItem, itemLocation: itemLocation };
     console.log(updatedItem);
+    delete updatedItem.item;
+    delete updatedItem.site;
     fetch('http://localhost:8000/inventory/update/single/'+updatedItem.siteID, {
         method: 'POST',
         headers: {
@@ -46,7 +48,7 @@ function InvItemDetails({ selectedItem, setSelectedItem }) {
           Location:
           <input
             type="text"
-            value={itemLocation}
+            value={itemLocation === null ? '' : itemLocation}
             onChange={handleLocationChange}
           />
         </label>

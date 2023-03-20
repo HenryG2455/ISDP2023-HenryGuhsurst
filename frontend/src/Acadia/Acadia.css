@@ -1,78 +1,64 @@
-.hidden{
+.hiddenAc{
     display: none;
 }
-.navlink{
+.navlinkAc{
     margin:2px;
     padding:.5rem;
 }
-.navbar{
+.navbarAC{
     padding:.5rem;
     background-color: rgb(189, 229, 245);
 }
-#location{
+#locationAC{
     float: right;
 }
-.table-container {
-    max-height: 300px !important; /* set a fixed height */
+.table-containerAc{
+    max-height: 900px !important; /* set a fixed height */
     overflow: auto !important;
     border: thin solid darkgray;
     margin-bottom: 20px;
     margin-left: 2px;
     margin-right: 2px;
 }
-.table-itemcontainer{
+.table-itemcontainerAC{
     max-height: 300px !important; /* set a fixed height */
     overflow: auto !important;
     border: thin solid darkgray;
 }
 
-.table-invcontainer{
+.table-invcontainerAC{
     max-height: 600px !important; /* set a fixed height */
     overflow: auto !important;
     border: thin solid darkgray;
 }
-.orderInput{
+.orderInputAC{
     width: 43px;
 }
-.load-order{
-    text-align: center; /* optional, to center the child divs */
-}
-.loadInfo {
-    display: inline-block;
-    width: 70%; /* optional, to give each child div equal width */
-    vertical-align: top; /* optional, to align the child divs at the top */
-}
-.truckInfo {
-    display: inline-block;
-    width: 30%; /* optional, to give each child div equal width */
-    vertical-align: top; /* optional, to align the child divs at the top */
-}
 
-#radioBtn{
+
+
+#radioBtnAC{
     position: absolute; /* position absolutely within parent */
     right: 0;
     top:1rem;
 }
-#headerContainer{
+#headerContainerAc{
     position: relative;
 }
-.selected{
+.selectedAc{
     background-color: #a1f6a6;
 }
-.orderInfo{
+.orderInfoAc{
     margin: 0;
 }
-#viewContainer{
+#viewContainerAC{
     position: relative;
 }
-#closeButton{
+#closeButtonAc{
     position: absolute; /* position absolutely within parent */
     right: 0;
     top:1rem;
 }
-.blue{
+.blueAc{
     background-color: lightblue !important;
-}
-#delivery-select{
-    margin:3px;
 }

@@ -37,6 +37,61 @@ export class InventoryService {
     }
   }
 
+
+  async moveFromTruckToStore(id: number, txnitems:any[] ) {
+    const itemIdsAndSiteIds = txnitems.map(item => ({ itemID: item.ItemID, siteID: 9999 }));
+    const deletedItems = await this.prisma.inventory.deleteMany({
+      where: {
+        OR: itemIdsAndSiteIds.map(id => ({ itemID:id.itemID, siteID: id.siteID })),
+      }
+    });
+    let res = this.addToStoreInv(id,txnitems);
+    return deletedItems;
+  }
+
+  async addToStoreInv(id: number, txnitems: any[]){
+    let res;
+    console.log(txnitems)
+    txnitems.forEach(async item => {
+      const exists = await this.prisma.inventory.findUnique({
+        where: {
+          itemID_siteID: {
+            itemID: item.item.itemID,
+            siteID: id,
+          },
+        },
+      });
+      if (exists === null) {
+        const newItem = await this.prisma.inventory.create({
+          data: {
+            itemID: item.item.itemID,
+            siteID: id,
+            quantity: item.quantity,
+            itemLocation: "Pallet",
+            reorderThreshold: 0
+          },
+        });
+        res = newItem;
+      } else {
+        const updatedItem = await this.prisma.inventory.update({
+          where: {
+            itemID_siteID: {
+              itemID:item.item.itemID,
+              siteID: id,
+            },
+          },
+          data: {
+            quantity: { increment: item.quantity }
+          },
+        });
+        res = updatedItem;
+      }
+    });
+    return res;
+  }
+
+
+
   async updateMany(id: number, updateInventoryDto:any,createInventoryDto:CreateInventoryDto[] ) {
     const itemIdsAndSiteIds = updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID }));
     const updatedInventoryItems = await this.prisma.inventory.updateMany({
@@ -54,6 +109,49 @@ export class InventoryService {
     }
     return updatedInventoryItems;
   }
+
+  async updateManyTransit(id: number, items:any[] ) {
+    const itemIdsAndSiteIds = items.map(item => ({ itemID: item.ItemID, siteID: 2 }));
+    const originalItems = await this.prisma.inventory.findMany({
+      where: {
+        OR: itemIdsAndSiteIds.map(id => ({ itemID:id.itemID, siteID: 2})),
+      }
+    });
+
+    console.log(itemIdsAndSiteIds);
+    console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    console.log(originalItems);
+    console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+    const deletedItems = await this.prisma.inventory.deleteMany({
+      where: {
+        OR: itemIdsAndSiteIds.map(id => ({ itemID:id.itemID, siteID: id.siteID })),
+      }
+    });
+    let res = this.makeTruckInventory(id,items);
+    return res;
+  }
+
+  async makeTruckInventory(id: number, items: any[]){
+    let res;
+    items.forEach(async itemLocation => {
+      const newItem = await this.prisma.inventory.create({
+        data: {
+          itemID: itemLocation.ItemID,
+          siteID: 9999,
+          quantity: itemLocation.quantity,
+          itemLocation: "Pallet",
+          reorderThreshold: 0
+        },
+      });
+      res = newItem;
+    });
+    return res;
+  }
+
+
+
+
 
   async createManyInWarehouseBay(id: number, createInventoryDto: CreateInventoryDto[]){
     
@@ -87,7 +185,7 @@ export class InventoryService {
             siteID: 2,
             quantity: itemLocation.quantity,
             itemLocation: "Pallet",
-            reorderThreshold: 5
+            reorderThreshold: 0
           },
         });
         res = newItem;

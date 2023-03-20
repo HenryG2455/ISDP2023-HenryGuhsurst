@@ -22,6 +22,13 @@ export class InventoryController {
     return this.inventoryService.findStoreInv(+id);
   }
 
+  @Post('update/transit/:id')
+  updateTruckInv(@Param('id') id: string, @Body() {items}:any) {
+    console.log(items);
+    console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    return this.inventoryService.updateManyTransit(+id, items);
+  }
+
   @Post('update/:id')
   updateStoreInv(@Param('id') id: string, @Body() {updateInventoryDto, createInventoryDto}:any) {
     console.log(updateInventoryDto);
@@ -29,6 +36,14 @@ export class InventoryController {
     console.log(createInventoryDto)
     return this.inventoryService.updateMany(+id, updateInventoryDto,createInventoryDto);
   }
+
+  @Post('deliver/:id')
+  moveStoreInv(@Param('id') id: string, @Body() txnitems:any[]) {
+    console.log(txnitems);
+    return this.inventoryService.moveFromTruckToStore(+id, txnitems);
+  }
+
+  
 
 
   @Post('update/single/:id')

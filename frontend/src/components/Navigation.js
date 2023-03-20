@@ -44,6 +44,9 @@ export default function Navigation({ user, setUser }) {
             if(crud.length < 3){
                 setCrudName(' hidden');
             }
+            if(user.siteID === 9999){
+                setLoggedOut(true);
+            }
         }
     }
     function Logout(){

@@ -1,12 +1,14 @@
 import React, { useState, useEffect} from 'react';
 import OrdersTable from './Order-comps/OrdersTable';
 import NewStoreOrder from './Order-comps/NewStoreOrder';
-import { constants,txnStatus} from '../../../data/Constants'
+import { constants,txnStatus, } from '../../../data/Constants'
 import '../../Main.css';
 import RecieveOrders from './Order-comps/RecieveOrders';
 import OrdersToFulfill from './Order-comps/Fulfil-comps/OrdersToFulfill';
+import DeliveredOrders from './Order-comps/Deliver-comps/DeliveredOrders';
+import ReadyOrders from './Order-comps/ReadyOrders';
 
-function Orders({user})  {
+function Orders({user, setKey})  {
     const hidden =  ' hidden';
     const [curUser, setCurUser] = useState(null)
     const [hiddenNameNewStoreOrder, setHiddenNameSO] = useState(hidden);
@@ -17,10 +19,12 @@ function Orders({user})  {
     const [orders, setOrders] = useState(null);
     const [showComponent, setShowComponent] = useState(true);
     const [sites, setSites] = useState([]);
+    const [readyOrders, setReadyOrders] = useState([]);
     const [ordersNeedingToBeRecieved, setOrdersNeedingToBeRecieved] = useState([]);
     const [ordersNeedingToBeFulfilled, setOrdersNeedingToBeFulfilled] = useState([]);
     const [showFulfill, setShowFulfill] = useState(false);
     const [globalOrders, setGlobalOrders] = useState([]);
+    const [deliverdOrders, setDeliveredOrders] = useState([]);
 
     useEffect(()=>{
       console.log(curUser);
@@ -53,12 +57,29 @@ function Orders({user})  {
         setGlobalOrders(tempOrders);
         canMakeOrder(tempOrders);
         checkForProcessing(tempOrders);
+        checkForReady(tempOrders);
+        checkForDelivered(tempOrders);
         console.log(tempOrders);
       })
       .catch(error => {
         console.log('There was an error', error);
       });
     }
+
+    const checkForDelivered = (orders) => { 
+      let temp = [];
+      orders.filter(order => order.status === txnStatus.DELIVERED).forEach(order => { temp.push(order)});
+      console.log(temp)
+      setDeliveredOrders(temp);
+    }
+
+    const checkForReady = (orders) => {
+      let temp = [];
+      orders.filter(order => order.status === txnStatus.READY).forEach(order => { temp.push(order)});
+      console.log(temp)
+      setReadyOrders(temp);
+    }
+
 
     const  checkForProcessing = (orders) => {
       let temp = [];
@@ -70,6 +91,7 @@ function Orders({user})  {
     //this function checks if the user is a warehouse manager and if they are it will check if they have the permission to recieve orders
     function canMakeOrder(orders){
       console.log(orders);
+      //first the user has to have the permission to create a store order
       if(user.user_permission.find(permission => permission.permissionID === constants.CREATESTOREORDER)){
         setHiddenNameSO(" ");
         console.log(typeof orders);
@@ -89,27 +111,27 @@ function Orders({user})  {
             }
           });
           setOrders(userOrders);
+          //this is to check if the user is a warehouse manager and if they are it will check if they have the permission to recieve orders
+        }else if(user.posn.permissionLevel === constants.WAREHOUSE_MANAGER){
+          if(user.user_permission.find(permission => permission.permissionID === constants.FULFILSTOREORDER)){
+            setShowFulfill(true);
+          }
+          isWarhouseManager(orders);
         }else{
           setOrders(orders);
         }
-      }else if(user.posn.permissionLevel === constants.WAREHOUSE_MANAGER){
-        if(user.user_permission.find(permission => permission.permissionID === constants.FULFILSTOREORDER)){
-          setShowFulfill(true);
-        }
-        isWarhouseManager(orders);
+        //if the user does not have the permission to create a store order then it will check if they 
+        //are a warehouse employee and if they are it will check if they have the permission to recieve orders
       }else if(user.posn.permissionLevel === constants.WAREHOUSE_EMPLOYEE  && user.user_permission.find(permission => permission.permissionID === constants.FULFILSTOREORDER)){
         setShowFulfill(true);
         setOrders(orders);
       }
-      else if(false){
-
-      }
       else{
         setOrders(orders);
       }
-
     }
 
+    //this function checks if the user is a warehouse manager and if they are it will check if they have the permission to recieve orders
     function isWarhouseManager(orders){
       if(user.posn.permissionLevel === constants.WAREHOUSE_MANAGER){
         setHiddenNameSO(hidden);
@@ -153,13 +175,23 @@ function Orders({user})  {
       <button className={hiddenNameNewStoreOrder} onClick={() => {setShowComponent(!showComponent); setHiddenNameB(''); setHiddenNameSO(hidden);}}>New Store Order</button>
       <button className={hiddenNameBack} onClick={() => {setShowComponent(!showComponent);  setHiddenNameB(hidden); setHiddenNameSO('');}}>Back</button>
       
-      {ordersNeedingToBeRecieved.length > 0 && (
+      {(ordersNeedingToBeRecieved.length > 0 && user.posn.permissionLevel === constants.WAREHOUSE_MANAGER ) && (
         <RecieveOrders orders={ordersNeedingToBeRecieved}  user={curUser} />
       )}
 
-      {showFulfill && (
+      {(showFulfill && ordersNeedingToBeFulfilled.length>0) && (
         <OrdersToFulfill globalOrders={globalOrders} orders={ordersNeedingToBeFulfilled} user={curUser} />
       )}
+
+      {(readyOrders.length > 0 && (user.posn.positionID === 6 || user.posn.positionID === 4  || user.posn.permissionLevel === constants.ADMINISTRATOR)&& user.user_permission.find(permission => permission.permissionID === constants.MOVEINVENTORY) ) && (
+        <ReadyOrders setKey={setKey} globalOrders={globalOrders} orders={readyOrders} user={curUser} />
+      )}
+      
+      {(deliverdOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
+        <DeliveredOrders globalOrders={globalOrders} orders={deliverdOrders} user={curUser} />
+      )}
+      
+      
       
 
     </div>

@@ -46,11 +46,11 @@ model employee {
 model inventory {
   itemID           Int
   siteID           Int
-  quantity         Int
+  quantity         Int?
   itemLocation     String? @db.VarChar(20)
   reorderThreshold Int?
-  item             item    @relation(fields: [itemID], references: [itemID], onDelete: NoAction, onUpdate: NoAction, map: "inventory_ibfk_1")
   site             site    @relation(fields: [siteID], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "inventory_ibfk_2")
+  item             item    @relation(fields: [itemID], references: [itemID], onDelete: NoAction, onUpdate: NoAction, map: "inventory_ibfk_1")
 
   @@id([itemID, siteID])
   @@index([siteID], map: "siteID")
@@ -155,10 +155,11 @@ model txn {
   status                    String     @db.VarChar(20)
   shipDate                  DateTime   @db.DateTime(0)
   txnType                   String     @db.VarChar(20)
-  barCode                   String     @db.VarChar(50)
+  barCode                   String?    @db.VarChar(50)
   createdDate               DateTime   @db.DateTime(0)
   deliveryID                Int?
   emergencyDelivery         Boolean?
+  notes                     String     @db.VarChar(255)
   site_txn_siteIDToTosite   site       @relation("txn_siteIDToTosite", fields: [siteIDTo], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_1")
   site_txn_siteIDFromTosite site       @relation("txn_siteIDFromTosite", fields: [siteIDFrom], references: [siteID], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_2")
   txnstatus                 txnstatus  @relation(fields: [status], references: [statusName], onDelete: NoAction, onUpdate: NoAction, map: "txn_ibfk_3")

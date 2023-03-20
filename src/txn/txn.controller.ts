@@ -18,6 +18,10 @@ export class TxnController {
   findAllOrders() {
     return this.txnService.findAllOrders();
   }
+  @Get('orders/getall/acadia')
+  findAllReadyOrders() {
+    return this.txnService.findAllReadyOrders();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -29,6 +33,11 @@ export class TxnController {
     let txn =updateinfo.txn;
     let removedItems = updateinfo.removedItems;
     return this.txnService.updateStoreOrder(+id,txn, removedItems);
+  }
+
+  @Post('storeOrder/close/:id')
+  closeStoreOrder(@Param('id') id: string,@Body() txn: any) {
+    return this.txnService.closeStoreOrder(+id);
   }
 
   @Post('storeOrder/new')
@@ -54,10 +63,20 @@ export class TxnController {
     let txnItems = createTxnDto.txnItems
     return this.txnService.updateBackOrder(+id,txn,txnItems);
   }
+  @Post('deliver/order/:id')
+  deliverOrder(@Param('id') id: string) {
+    return this.txnService.deliverOrder(+id);
+  }
 
   @Post('process/order/:id')
   porcessOrder(@Param('id') id: string) {
     return this.txnService.porcessOrder(+id);
+  }
+
+  @Post('transit/order/:id')
+  transitOrder(@Param('id') id: string, @Body() deliveryID: any) {
+    console.log(deliveryID.deliveryID);
+    return this.txnService.transitOrder(+id,+deliveryID.deliveryID);
   }
 
   @Post('ready/order/:id')

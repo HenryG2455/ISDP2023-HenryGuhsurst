@@ -9,4 +9,5 @@ export class CreateTxnDto extends Txn {
     createdDate:Date;
     deliveryID?:number;
     emergencyDelivery?:boolean;
+    notes:string;
 }

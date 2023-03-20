@@ -10,4 +10,5 @@ export class Txn implements Prisma.txnUncheckedCreateInput {
     createdDate:Date;
     deliveryID?:number;
     emergencyDelivery?:boolean;
+    notes:string;
 }

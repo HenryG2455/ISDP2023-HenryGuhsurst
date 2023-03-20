@@ -23,7 +23,7 @@ export class TxnService {
       quantity: dto.quantity,
     })) as Prisma.txnitemsCreateManyTxnInput[];
     //const txnItemsEnumerable = Enumerable.from(txnItems);
-    let {siteIDTo, siteIDFrom, status, shipDate, txnType, barCode, createdDate, deliveryID, emergencyDelivery} = createTxnDto
+    let {siteIDTo, siteIDFrom, status, shipDate, txnType, barCode, createdDate, deliveryID, emergencyDelivery, notes} = createTxnDto
     shipDate = new Date(shipDate);
     createdDate= new Date(createdDate);
     const data:Prisma.txnCreateInput = {
@@ -50,17 +50,19 @@ export class TxnService {
       },
       barCode,
       createdDate,
-      delivery:{
-        connect: {
-          deliveryID: deliveryID
-        },
-      },
+
+      //delivery:{
+      //  connect: {
+      //    deliveryID: deliveryID
+      //  },
+      //},
       emergencyDelivery,
       txnitems:{
         createMany:{
           data:txnItems
         }
       },
+      notes,
     }
     const createdTxn  = await this.prisma.txn.create({ data: data }) // Get the txnID of the newly created row
     return {createdTxn}
@@ -77,13 +79,50 @@ export class TxnService {
         where: {
           txnType: {
             in: ['Back Order','Store Order','Supplier Order']
+          },
+          AND: {
+            NOT: {
+              status: "CLOSED"
+            }
           } 
         },
         include:{
           site_txn_siteIDFromTosite:true,
           site_txn_siteIDToTosite:true,
           delivery:true,
-          txnitems:true,
+          txnitems:{
+            include:{
+              item:true,
+            }
+          },
+        }
+      });
+      return orders
+    } catch (error) {
+      console.error(error);
+    }
+  } 
+
+  async findAllReadyOrders() {
+    try {
+      const orders = await this.prisma.txn.findMany({
+        where: {
+          txnType: {
+            in: ['Back Order','Store Order','Supplier Order']
+          },
+          status: {
+            in: [txnStatus.READY, txnStatus.IN_TRANSIT]
+          }
+        },
+        include:{
+          site_txn_siteIDFromTosite:true,
+          site_txn_siteIDToTosite:true,
+          delivery:true,
+          txnitems:{
+            include:{
+              item:true,
+            }
+          },
         }
       });
       return orders
@@ -130,11 +169,6 @@ export class TxnService {
       },
       barCode,
       createdDate,
-      delivery:{
-        connect: {
-          deliveryID: deliveryID
-        },
-      },
       emergencyDelivery,
     }
     const txn = await this.prisma.txn.update({
@@ -151,6 +185,23 @@ export class TxnService {
     return txn;
 
   }
+
+  async closeStoreOrder(id: number) {
+    const data:Prisma.txnUpdateInput = {
+      txnstatus:{
+        connect: {
+					statusName: txnStatus.CLOSED
+				},
+      },
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
+  }
   
   async porcessOrder(id: number) {
     const data:Prisma.txnUpdateInput = {
@@ -158,6 +209,45 @@ export class TxnService {
         connect: {
 					statusName: txnStatus.PROCESSING
 				},
+      },
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
+  }
+
+  async deliverOrder(id: number) {
+    const data:Prisma.txnUpdateInput = {
+      txnstatus:{
+        connect: {
+					statusName: txnStatus.DELIVERED
+				},
+      },
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
+  }
+
+  async transitOrder(id: number , deliveryID: number) {
+    const data:Prisma.txnUpdateInput = {
+      txnstatus:{
+        connect: {
+					statusName: txnStatus.IN_TRANSIT
+				},
+      },
+      delivery:{
+       connect: {
+         deliveryID: deliveryID
+       },
       },
     }
     const txn = await this.prisma.txn.update({
@@ -190,10 +280,10 @@ export class TxnService {
 
 
   async readyOrder(id: number,  updateTxnDto: UpdateTxnDto) {
-    let {siteIDTo, siteIDFrom, status, shipDate, txnType, barCode, createdDate, deliveryID, emergencyDelivery} = updateTxnDto
+    let {siteIDTo, siteIDFrom, status, shipDate, txnType, barCode, createdDate, deliveryID, emergencyDelivery, notes} = updateTxnDto
     shipDate = new Date(shipDate);
     createdDate= new Date(createdDate);
-    const data:Prisma.txnCreateInput = {
+    const data:Prisma.txnUpdateInput = {
       site_txn_siteIDToTosite: {
 				connect: {
           siteID: siteIDTo
@@ -228,6 +318,7 @@ export class TxnService {
 
         }
       },
+      notes
     }
     const txn = await this.prisma.txn.update({
       where: {

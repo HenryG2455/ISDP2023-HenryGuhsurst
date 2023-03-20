@@ -39,7 +39,12 @@ export default function Login({user, setUser}) {
       delete emp.password;
       localStorage.setItem("User",JSON.stringify(emp));
       setUser(emp);
-      navigate('/');
+      console.log(emp)
+      if(emp.siteID === 9999){
+        navigate('/acadia');
+      }else{
+        navigate('/');
+      }
     }else{
       setErrorText("Password is Wrong");
     }
