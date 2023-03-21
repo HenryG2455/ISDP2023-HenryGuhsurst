@@ -14,10 +14,21 @@ export class TxnController {
     return this.txnService.findAll();
   }
 
+  @Get('onlineOrder/find/:email/:txnID')
+  findOnline(@Param('email') email: string, @Param('txnID') txnID: string) {
+    return this.txnService.findAllCustOrders(email,+txnID);
+  }
+
   @Get('orders/getall')
   findAllOrders() {
     return this.txnService.findAllOrders();
   }
+
+  @Get('onlineorders/getall/:id')
+  findAllOnlineOrders(@Param('id') id: string) {
+    return this.txnService.findAllOnlineOrders(+id);
+  }
+
   @Get('orders/getall/acadia')
   findAllReadyOrders() {
     return this.txnService.findAllReadyOrders();
@@ -42,6 +53,15 @@ export class TxnController {
 
   @Post('storeOrder/new')
   create(@Body() createTxnDto: any) {
+    let txn =createTxnDto.txn;
+    let txnItems = createTxnDto.txnItems
+    console.log(txn)
+    console.log(txnItems)
+    return this.txnService.create(txn,txnItems);
+  }
+
+  @Post('onlineOrder/new')
+  createOnline(@Body() createTxnDto: any) {
     let txn =createTxnDto.txn;
     let txnItems = createTxnDto.txnItems
     console.log(txn)

@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import { useNavigate} from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 const salt = bcrypt.genSaltSync(11);
 let res;
@@ -50,6 +52,9 @@ export default function Login({user, setUser}) {
     }
     //console.log(user);
   }
+  function customer(){
+    navigate('/customer');
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -57,35 +62,52 @@ export default function Login({user, setUser}) {
   }
   
   return (
-    <Card style={{ width: '18rem' }}>
-      <Card.Body>
-        <form onSubmit={handleSubmit}>
-          <Card.Title>Login Page</Card.Title>
-          <Card.Text>
-          <label>
-          Username:
-          <input 
-            type="text" 
-            onChange={(event) => setUsername(event.target.value)}
-            required 
-          />
-          
-          </label>
-          <br />
-          <label>
-            Password:
-            <input 
-              type="password" 
-              onChange={(event) => setPassword(event.target.value)} 
-              required
-            />
-          </label>
-          <br />
-          <span>{errorText}</span><br/>
-          </Card.Text>
-          <Button type="submit" variant='primary'>Login</Button>
-        </form>
-      </Card.Body>
-    </Card>
+    <div>
+      <Row xs={1} md={3} className="g-4">
+      <Col>
+        <Card style={{ width: '18rem' }}>
+          <Card.Body>
+            <Card.Title>Are you a Customer?</Card.Title>
+              <Card.Text>
+                <span>If so, you can order items form your local Store, or check up on a order </span>
+                <Button variant='primary' onClick={customer}>Click Here</Button>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col>
+          <Card style={{ width: '18rem' }}>
+            <Card.Body>
+              <form onSubmit={handleSubmit}>
+                <Card.Title>Login Page</Card.Title>
+                <Card.Text>
+                <label>
+                Username:
+                <input 
+                  type="text" 
+                  onChange={(event) => setUsername(event.target.value)}
+                  required 
+                />
+                
+                </label>
+                <br />
+                <label>
+                  Password:
+                  <input 
+                    type="password" 
+                    onChange={(event) => setPassword(event.target.value)} 
+                    required
+                  />
+                </label>
+                <br />
+                <span>{errorText}</span><br/>
+                </Card.Text>
+                <Button type="submit" variant='primary'>Login</Button>
+              </form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   );
 }

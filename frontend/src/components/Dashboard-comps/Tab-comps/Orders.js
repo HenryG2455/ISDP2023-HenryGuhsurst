@@ -7,6 +7,10 @@ import RecieveOrders from './Order-comps/RecieveOrders';
 import OrdersToFulfill from './Order-comps/Fulfil-comps/OrdersToFulfill';
 import DeliveredOrders from './Order-comps/Deliver-comps/DeliveredOrders';
 import ReadyOrders from './Order-comps/ReadyOrders';
+import OnlineOrders from './Order-comps/Online-comps/OnlineOrders';
+import { Button, Table } from 'react-bootstrap';
+
+
 
 function Orders({user, setKey})  {
     const hidden =  ' hidden';
@@ -25,6 +29,9 @@ function Orders({user, setKey})  {
     const [showFulfill, setShowFulfill] = useState(false);
     const [globalOrders, setGlobalOrders] = useState([]);
     const [deliverdOrders, setDeliveredOrders] = useState([]);
+    const [onlineOrders, setOnlineOrdres] = useState([]);
+    const [showOnlineOrders, setShowOnlineOrders] = useState(false);
+    const [ordersBtn, setOrdersBtn] = useState(false);
 
     useEffect(()=>{
       console.log(curUser);
@@ -34,6 +41,7 @@ function Orders({user, setKey})  {
       if(user){
           setCurUser(user);
           getOrders();
+          getOnlineOrders();
           fetch('http://localhost:8000/site')
           .then(response => response.json())
           .then(data => {
@@ -43,6 +51,26 @@ function Orders({user, setKey})  {
           });
       }
     },[user]);
+
+    async function getOnlineOrders(){
+      fetch('http://localhost:8000/txn/onlineorders/getall/'+user.siteID)
+      .then(res => {
+        if (!res.ok) {
+          throw Error('Could not fetch the data for that resource');
+        } else {
+          return res.json();
+        }
+      })
+      .then(tempOrders => {
+        setOnlineOrdres(tempOrders);
+        console.log(tempOrders);
+      })
+      .catch(error => {
+        console.log('There was an error', error);
+      });
+    }
+
+
 
     async function getOrders(){
       fetch('http://localhost:8000/txn/orders/getall')
@@ -170,7 +198,7 @@ function Orders({user, setKey})  {
     //<p>Orders {curUser != null? curUser.firstName || res:String}</p>
 
   return (
-    <div>
+    <div className='mainPageContainer'>
       {showComponent ? <OrdersTable user={curUser}  orders={orders} setShowComponent={setShowComponent}/> : <NewStoreOrder setShowComponent={setShowComponent} sites={sites} user={curUser}  />}
       <button className={hiddenNameNewStoreOrder} onClick={() => {setShowComponent(!showComponent); setHiddenNameB(''); setHiddenNameSO(hidden);}}>New Store Order</button>
       <button className={hiddenNameBack} onClick={() => {setShowComponent(!showComponent);  setHiddenNameB(hidden); setHiddenNameSO('');}}>Back</button>
@@ -190,12 +218,19 @@ function Orders({user, setKey})  {
       {(deliverdOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
         <DeliveredOrders globalOrders={globalOrders} orders={deliverdOrders} user={curUser} />
       )}
-      
-      
-      
 
+      {(onlineOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
+        <div className='ordersBtn'>
+          <button disabled={ordersBtn} onClick={() => {setShowOnlineOrders(!showOnlineOrders); setOrdersBtn(!ordersBtn)}}>You have have Online Orders</button>
+        </div>
+      )}
+      
+      {showOnlineOrders && (
+        <OnlineOrders globalOrders={globalOrders} orders={onlineOrders} user={curUser} />
+      )}
     </div>
   )
 }
 
 export default Orders
+//<OnlineOrders globalOrders={globalOrders} orders={onlineOrders} user={curUser} />

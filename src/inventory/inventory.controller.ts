@@ -17,6 +17,11 @@ export class InventoryController {
     return this.inventoryService.findAll();
   }
 
+  @Get('getall')
+  findAllCustomer() {
+    return this.inventoryService.findAllCustomer();
+  }
+
   @Get(':id')
   findStoreInv(@Param('id') id: string) {
     return this.inventoryService.findStoreInv(+id);

@@ -8,11 +8,24 @@ export default function Navigation({ user, setUser }) {
     const [tempUser, setTempUser] = useState(null);
     const [crudName, setCrudName] = useState('');
     const [className2, setClassName2] = useState('');
-    const  [loggedOut, setLoggedOut] = useState(true);
+    const [loggedOut, setLoggedOut] = useState(true);
+    const [hideLogout, setHideLogout] = useState('');
+    const [hideLogin, setHideLogin] = useState('');
 
     useEffect(() => {
         // Check For User
         //console.log(user);
+        if(window.location.href ==="http://localhost:3000/login"){
+            setHideLogout(' hidden');
+        }else{
+            setHideLogout('');
+        }
+
+        if(hideLogout === ''){
+            setHideLogin(' hidden');
+        }else{
+            setHideLogin('');
+        }
         authUser();
     });
 
@@ -30,7 +43,6 @@ export default function Navigation({ user, setUser }) {
             }else{setLoggedOut(false);}
             
             setCrudName('');
-            setClassName2('');
             let crud =[];
             if(user.user_permission.length>0){
                 user.user_permission.forEach(ele => {
@@ -52,6 +64,7 @@ export default function Navigation({ user, setUser }) {
     function Logout(){
         localStorage.removeItem("User");
         setUser(null);
+        setLoggedOut(true);
         setCrudName(' hidden');
         navigate("/login");
     }
@@ -61,7 +74,9 @@ export default function Navigation({ user, setUser }) {
           <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/home">HomePage</NavLink>
           <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/locations">Site Locations</NavLink>
           <NavLink id='crud' className={crudName+' navlink'} to="/crud">Employee CRUD</NavLink>
-          <a id='logout' className={className2} onClick={Logout}>Logout</a>
+          <a id='login' className={hideLogin} onClick={Logout}>Login</a>
+          <a id='logout' className={hideLogout} onClick={Logout}>Logout</a>
+          
        </div>
     );
 }

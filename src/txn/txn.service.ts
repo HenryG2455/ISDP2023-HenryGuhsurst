@@ -72,6 +72,49 @@ export class TxnService {
     return `This action returns all txn`;
   }
 
+  async findAllCustOrders(email:string, txnID:number) {
+    try {
+      const txns = await this.prisma.txn.findMany({
+        where: {
+          AND: [
+            { txnID: +txnID },
+            { notes: { endsWith: email.toLowerCase() } }
+          ]
+        }
+      });
+      return txns;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
+  async findAllOnlineOrders(id: number) {
+    try {
+      const onlineOrders = await this.prisma.txn.findMany({
+        where: {
+          AND: [
+            { siteIDTo: id },
+            { txnType: 'Curbside' },
+            { status: 'PROCESSING' },
+          ],
+        },
+        include:{
+          site_txn_siteIDFromTosite:true,
+          site_txn_siteIDToTosite:true,
+          delivery:true,
+          txnitems:{
+            include:{
+              item:true,
+            }
+          },
+      }});
+      return onlineOrders;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
   async findAllOrders() {
     try {

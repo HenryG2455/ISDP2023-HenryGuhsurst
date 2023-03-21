@@ -76,3 +76,29 @@
 #delivery-select{
     margin:3px;
 }
+.inputs{
+    margin: 3px;
+}
+.topper{
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 1rem;
+    padding: 1rem;;
+}
+#mainPageContainer{
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 1rem;
+    padding: 1rem;;
+}
+.ordersBtn{
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 1rem;
+}
+.mainPageContainer{
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 1rem;
+    padding: 1rem;;
+}

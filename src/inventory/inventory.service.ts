@@ -10,6 +10,20 @@ export class InventoryService {
     return 'This action adds a new inventory';
   }
 
+  async findAllCustomer() {
+    try {
+      const items = await this.prisma.inventory.findMany({
+        include:{
+          item: true,
+          site: true
+        }
+      });
+      return items;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async findAll() {
     try {
       const items = await this.prisma.inventory.findMany({
@@ -22,8 +36,9 @@ export class InventoryService {
     } catch (error) {
       console.error(error);
     }
-    
   }
+
+
   async findStoreInv(id: number) {
     try {
       const items = await this.prisma.inventory.findMany({

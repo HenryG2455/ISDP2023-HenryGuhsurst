@@ -12,6 +12,8 @@ import HomePage from './components/HomePage';
 import Locations from './components/Locations';
 import CreateNewSite from './components/Location-comps/CreateNewSite';
 import Acadia from './Acadia/Acadia';
+import CustomerPage from './customer/CustomerPage';
+import CustomerSearch from './customer/CustomerSearch';
  
 function App(){
     const [user, setUser] = useState(null);
@@ -33,23 +35,24 @@ function App(){
         setUser(emp);
       }
 
-        return (      
-            <BrowserRouter>
-            <div>
-                <Navigation user={user} setUser={setUser}/>
-                <Routes>
-                    <Route index element={<DashBoard user={user} setUser={setUser}/>} />
-                    <Route path="/acadia" element={<Acadia user={user} setUser={setUser}/>} />
-                    <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
-                    <Route path="/crud" element={<EmployeeCRUD  user={user}/>} exact/>
-                    <Route path="/addemployee" element={<NewEmployeeForm/>} exact/>
-                    <Route path="/home" element={<HomePage user={user} setUser={setUser}/>} exact/>
-                    <Route path="/locations" element={<Locations user={user} setUser={setUser}/>} exact/>
-                    <Route path="/addsite" element={<CreateNewSite user={user} setUser={setUser}/>} exact/>
-                </Routes>
-            </div> 
-            </BrowserRouter>
-        );
-
+      return (      
+          <BrowserRouter>
+          <div>
+              <Navigation user={user} setUser={setUser}/>
+              <Routes>
+                  <Route index element={<DashBoard user={user} setUser={setUser}/>} />
+                  <Route path="/acadia" element={<Acadia user={user} setUser={setUser}/>} />
+                  <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
+                  <Route path="/crud" element={<EmployeeCRUD  user={user}/>} exact/>
+                  <Route path="/addemployee" element={<NewEmployeeForm/>} exact/>
+                  <Route path="/home" element={<HomePage user={user} setUser={setUser}/>} exact/>
+                  <Route path="/locations" element={<Locations user={user} setUser={setUser}/>} exact/>
+                  <Route path="/addsite" element={<CreateNewSite user={user} setUser={setUser}/>} exact/>
+                  <Route path="/customer" element={<CustomerPage/>} />
+                  <Route path="/onlinesearch" element={<CustomerSearch/>} />
+              </Routes>
+          </div> 
+          </BrowserRouter>
+      );
 }
 export default App;
