@@ -35,7 +35,7 @@ function CustomerSearch() {
       </label>
       <label>
         TxnID:
-        <input type="number" value={txnTerm} min={0} onChange={handleInputTxn} />
+        <input type="number" value={txnTerm} min={0} placeholder={"0000"} onChange={handleInputTxn} />
       </label>
       <button onClick={handleSearch}>Search</button>
       {searchResults.length > 0 ? (
@@ -44,9 +44,7 @@ function CustomerSearch() {
                 <tr>
                     <th>Transaction ID</th>
                     <th>Site ID To</th>
-                    <th>Site ID From</th>
                     <th>Status</th>
-                    <th>Ship Date</th>
                     <th>Transaction Type</th>
                     <th>Barcode</th>
                     <th>Created Date</th>
@@ -58,12 +56,10 @@ function CustomerSearch() {
                 <tr key={txn.txnID}>
                     <td>{txn.txnID}</td>
                     <td>{txn.siteIDTo}</td>
-                    <td>{txn.siteIDFrom}</td>
                     <td>{txn.status}</td>
-                    <td>{txn.shipDate}</td>
                     <td>{txn.txnType}</td>
                     <td>{txn.barCode}</td>
-                    <td>{txn.createdDate}</td>
+                    <td>{new Date(txn.createdDate).toLocaleString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</td>
                     <td>{txn.notes}</td>
                 </tr>
             ))}

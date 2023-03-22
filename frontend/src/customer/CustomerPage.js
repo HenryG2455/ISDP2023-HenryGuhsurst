@@ -189,6 +189,7 @@ function CustomerPage() {
       })
       .then(data => {
         console.log(data);
+        alert('Order Submitted your order number is: ' + data.createdTxn.txnID);
         window.location.reload();
       })
       .catch(error => {

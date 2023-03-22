@@ -8,6 +8,7 @@ function ReadyOrders({orders , user, setKey })  {
     const [allOrders, setAllOrders] = useState([])
     const [selectedOrder, setSelectedOrder] = useState({});
     const [selectedRow, setSelectedRow] = useState(null);
+    const [displayLoadButton, setDisplayLoadButton] = useState(true);
 
     const handleRowClick = (id) => {
       setSelectedRow(id);
@@ -17,6 +18,7 @@ function ReadyOrders({orders , user, setKey })  {
     const handleView = (order) => {
         console.log(order);
         setSelectedOrder(order);
+        setDisplayLoadButton(false);
     };
 
     useEffect(()=>{
@@ -42,16 +44,13 @@ function ReadyOrders({orders , user, setKey })  {
           });
             console.log(sortedArray)
             setAllOrders(sortedArray);
-            permissions();
         }
     },[orders]);
 
-    function permissions(){
-    }
 
 
   return (
-    <div className='table-container'>
+    <div className='table-container-record'>
         <h4>Orders Ready for Pickup</h4>
         <Table striped bordered hover >
             <thead>
@@ -65,7 +64,7 @@ function ReadyOrders({orders , user, setKey })  {
             </tr>
             </thead>
             <tbody>
-            {allOrders.map((order) => (
+            {allOrders.map((order, i) => (
                 <React.Fragment key={order.txnID}>
                 <tr key={order.txnID} onClick={() => handleRowClick(order.txnID)} className={selectedRow === order.txnID ? " selected" : ""}>
                     
@@ -75,7 +74,9 @@ function ReadyOrders({orders , user, setKey })  {
                     <td>{order.emergencyDelivery ? "Yes" : "No"}</td>
                     <td>{order.txnID}</td>
                     <td>
-                    <button disabled={selectedRow !== order.txnID} onClick={() => handleView(order)}>Load</button>
+                      {displayLoadButton && i === 0 && (
+                        <button disabled={selectedRow !== order.txnID} onClick={() => handleView(order)}>Load</button>
+                      )}
                     </td>
                 </tr>
                 {selectedOrder.txnID === order.txnID && (

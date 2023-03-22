@@ -56,8 +56,8 @@ export class InventoryController {
     return this.inventoryService.updateOne(+id, updateInventoryDto.item);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.inventoryService.remove(+id);
+  @Delete('removeInv/:id')
+  remove(@Param('id') id: string,@Body() {inventoryDto}: any) {
+    return this.inventoryService.removeItems(+id, inventoryDto);
   }
 }

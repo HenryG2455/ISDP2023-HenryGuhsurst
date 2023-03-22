@@ -3,6 +3,8 @@ import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { employee, Prisma } from "@prisma/client";
 import { PrismaService } from '../prisma/prisma.service';
+
+
 @Injectable()
 export class InventoryService {
   constructor(private prisma: PrismaService){}
@@ -108,17 +110,14 @@ export class InventoryService {
 
 
   async updateMany(id: number, updateInventoryDto:any,createInventoryDto:CreateInventoryDto[] ) {
-    const itemIdsAndSiteIds = updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID }));
-    const updatedInventoryItems = await this.prisma.inventory.updateMany({
-      where: {
-        OR: itemIdsAndSiteIds.map(id => ({ itemID:id.itemID, siteID: id.siteID })),
-      },
-      data: {
-        itemLocation: { set: updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID, itemLocation:item.itemLocation })).find(item => item).itemLocation },
-        quantity: { set: updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID, quantity: item.quantity})).find(item => item).quantity },
-        reorderThreshold: { set: updateInventoryDto.map(item => ({ itemID: item.itemID, siteID: item.siteID, reorderThreshold:item.reorderThreshold})).find(item => item).reorderThreshold },
-      }
-    });
+    const updatedInventoryItems = await Promise.all(updateInventoryDto.map(async (updateItem) => {
+      const { itemID, siteID, itemLocation, quantity, reorderThreshold } = updateItem;
+      const where = { itemID, siteID };
+      return this.prisma.inventory.update({
+        where:{ itemID_siteID: where},
+        data: { itemLocation, quantity, reorderThreshold },
+      });
+    }));
     if(createInventoryDto!=undefined){
       this.Rubbish(id,createInventoryDto);
     }
@@ -189,7 +188,7 @@ export class InventoryService {
         where: {
           itemID_siteID: {
             itemID: itemLocation.itemID,
-            siteID: 2,
+            siteID: id,
           },
         },
       });
@@ -197,9 +196,9 @@ export class InventoryService {
         const newItem = await this.prisma.inventory.create({
           data: {
             itemID: itemLocation.itemID,
-            siteID: 2,
+            siteID: id,
             quantity: itemLocation.quantity,
-            itemLocation: "Pallet",
+            itemLocation: itemLocation.itemLocation,
             reorderThreshold: 0
           },
         });
@@ -209,7 +208,7 @@ export class InventoryService {
           where: {
             itemID_siteID: {
               itemID:itemLocation.itemID,
-              siteID: 2,
+              siteID: id,
             },
           },
           data: {
@@ -236,4 +235,52 @@ export class InventoryService {
   remove(id: number) {
     return `This action removes a #${id} inventory`;
   }
+
+  async removeItems(id: number, inventoryDto: any[]) {
+    console.log(inventoryDto)
+    const itemIds = inventoryDto.map((item) => item.ItemID);
+    const promises = inventoryDto.map((item) => 
+      this.prisma.inventory.findMany({
+        where: {
+          AND: {
+            siteID: id,
+            itemID: item.ItemID,
+          }
+        },
+      })
+    );
+    const inv = await Promise.all(promises)
+    const flattenedInv = inv.flatMap((item) => item);
+    console.log(flattenedInv);
+    const updates = flattenedInv.map((item) => {
+      const inventoryItem = inventoryDto.find((i) => i.ItemID === item.itemID);
+      const newQuantity = item.quantity - inventoryItem.quantity;
+      console.log(newQuantity);
+      console.log(inventoryItem)
+      if (newQuantity <= 0) {
+        return this.prisma.inventory.deleteMany({
+          where: {
+            siteID: id,
+            itemID: item.itemID,
+          },
+        });
+      } else {
+        return this.prisma.inventory.updateMany({
+          where: {
+            siteID: id,
+            itemID: item.itemID,
+          },
+          data: {
+            quantity: newQuantity,
+          },
+        });
+      }
+    });
+  
+    await this.prisma.$transaction(updates);
+    return updates
+  }
+  
+  
+  
 }

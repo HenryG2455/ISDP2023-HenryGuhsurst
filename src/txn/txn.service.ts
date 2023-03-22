@@ -68,8 +68,20 @@ export class TxnService {
     return {createdTxn}
   }
 
-  findAll() {
-    return `This action returns all txn`;
+  async findAll() {
+    try {
+      const txns = await this.prisma.txn.findMany({
+        where: {
+          AND: [
+            { txnType: { in: ['Curbside', 'Back Order','Store Order','Supplier Order','Online'] } },
+            { status: { in: ['NEW','SUBMITTED','RECEIVED','PROCESSING'] } }
+          ],
+        },
+      });
+      return txns;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async findAllCustOrders(email:string, txnID:number) {
@@ -103,6 +115,30 @@ export class TxnService {
           site_txn_siteIDFromTosite:true,
           site_txn_siteIDToTosite:true,
           delivery:true,
+          txnitems:{
+            include:{
+              item:true,
+            }
+          },
+      }});
+      return onlineOrders;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async findAllCurbsideReady(id: number) {
+    try {
+      const onlineOrders = await this.prisma.txn.findMany({
+        where: {
+          AND: [
+            { siteIDTo: id },
+            { txnType: 'Curbside' },
+            { status: 'READY' },
+          ],
+        },
+        include:{
+          site_txn_siteIDToTosite:true,
           txnitems:{
             include:{
               item:true,
@@ -245,6 +281,24 @@ export class TxnService {
     })
     return txn;
   }
+
+
+  async cancelTxn(id: number) {
+    const data:Prisma.txnUpdateInput = {
+      txnstatus:{
+        connect: {
+					statusName: txnStatus.CANCELLED
+				},
+      },
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
+  }
   
   async porcessOrder(id: number) {
     const data:Prisma.txnUpdateInput = {
@@ -268,6 +322,23 @@ export class TxnService {
       txnstatus:{
         connect: {
 					statusName: txnStatus.DELIVERED
+				},
+      },
+    }
+    const txn = await this.prisma.txn.update({
+      where: {
+        txnID: id,
+      },
+      data
+    })
+    return txn;
+  }
+
+  async closeOrder(id: number) {
+    const data:Prisma.txnUpdateInput = {
+      txnstatus:{
+        connect: {
+					statusName: txnStatus.CLOSED
 				},
       },
     }
@@ -372,7 +443,5 @@ export class TxnService {
     return txn;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} txn`;
-  }
+  
 }

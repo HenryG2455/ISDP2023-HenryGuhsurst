@@ -71,13 +71,14 @@ export default function Navigation({ user, setUser }) {
     return (
        <div className= 'navbar'>
           <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/">Dashboard</NavLink>
-          <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/home">HomePage</NavLink>
+          
           <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/locations">Site Locations</NavLink>
           <NavLink id='crud' className={crudName+' navlink'} to="/crud">Employee CRUD</NavLink>
+          <NavLink id='crud' className={crudName+' navlink'} to="/crudreports">Records CRUD</NavLink>
           <a id='login' className={hideLogin} onClick={Logout}>Login</a>
           <a id='logout' className={hideLogout} onClick={Logout}>Logout</a>
           
        </div>
     );
 }
- 
+ //<NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/home">HomePage</NavLink>

@@ -14,6 +14,11 @@ export class TxnController {
     return this.txnService.findAll();
   }
 
+  @Get('getall')
+  findAllBeforeReady() {
+    return this.txnService.findAll();
+  }
+
   @Get('onlineOrder/find/:email/:txnID')
   findOnline(@Param('email') email: string, @Param('txnID') txnID: string) {
     return this.txnService.findAllCustOrders(email,+txnID);
@@ -27,6 +32,11 @@ export class TxnController {
   @Get('onlineorders/getall/:id')
   findAllOnlineOrders(@Param('id') id: string) {
     return this.txnService.findAllOnlineOrders(+id);
+  }
+
+  @Get('curbsideready/getall/:id')
+  findAlReadyCurbside(@Param('id') id: string) {
+    return this.txnService.findAllCurbsideReady(+id);
   }
 
   @Get('orders/getall/acadia')
@@ -49,6 +59,11 @@ export class TxnController {
   @Post('storeOrder/close/:id')
   closeStoreOrder(@Param('id') id: string,@Body() txn: any) {
     return this.txnService.closeStoreOrder(+id);
+  }
+
+  @Post('cancel/:id')
+  cancelTxn(@Param('id') id: string) {
+    return this.txnService.cancelTxn(+id);
   }
 
   @Post('storeOrder/new')
@@ -88,6 +103,11 @@ export class TxnController {
     return this.txnService.deliverOrder(+id);
   }
 
+  @Post('close/order/:id')
+  closerOrder(@Param('id') id: string) {
+    return this.txnService.closeOrder(+id);
+  }
+
   @Post('process/order/:id')
   porcessOrder(@Param('id') id: string) {
     return this.txnService.porcessOrder(+id);
@@ -104,8 +124,8 @@ export class TxnController {
     return this.txnService.readyOrder(+id,updateTxnDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.txnService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.txnService.remove(+id);
+  // }
 }

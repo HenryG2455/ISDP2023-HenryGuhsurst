@@ -9,6 +9,7 @@ import DeliveredOrders from './Order-comps/Deliver-comps/DeliveredOrders';
 import ReadyOrders from './Order-comps/ReadyOrders';
 import OnlineOrders from './Order-comps/Online-comps/OnlineOrders';
 import { Button, Table } from 'react-bootstrap';
+import CurbsideOrders from './Order-comps/Online-comps/CurbsideOrders';
 
 
 
@@ -32,6 +33,11 @@ function Orders({user, setKey})  {
     const [onlineOrders, setOnlineOrdres] = useState([]);
     const [showOnlineOrders, setShowOnlineOrders] = useState(false);
     const [ordersBtn, setOrdersBtn] = useState(false);
+    const [curbsideBtn, setCurbsideBtn] = useState(false);
+    const [curbsideOrders, setCurbsideOrders] = useState([]);
+    const [showCurbsideOrders, setShowCurbsideOrders] = useState(false);
+    const [showDeliveredOrders, setShowDeliveredOrders] = useState(false);
+
 
     useEffect(()=>{
       console.log(curUser);
@@ -42,6 +48,7 @@ function Orders({user, setKey})  {
           setCurUser(user);
           getOrders();
           getOnlineOrders();
+          getReadyCurbside();
           fetch('http://localhost:8000/site')
           .then(response => response.json())
           .then(data => {
@@ -63,6 +70,24 @@ function Orders({user, setKey})  {
       })
       .then(tempOrders => {
         setOnlineOrdres(tempOrders);
+        console.log(tempOrders);
+      })
+      .catch(error => {
+        console.log('There was an error', error);
+      });
+    }
+
+    async function getReadyCurbside(){
+      fetch('http://localhost:8000/txn/curbsideready/getall/'+user.siteID)
+      .then(res => {
+        if (!res.ok) {
+          throw Error('Could not fetch the data for that resource');
+        } else {
+          return res.json();
+        }
+      })
+      .then(tempOrders => {
+        setCurbsideOrders(tempOrders);
         console.log(tempOrders);
       })
       .catch(error => {
@@ -214,19 +239,35 @@ function Orders({user, setKey})  {
       {(readyOrders.length > 0 && (user.posn.positionID === 6 || user.posn.positionID === 4  || user.posn.permissionLevel === constants.ADMINISTRATOR)&& user.user_permission.find(permission => permission.permissionID === constants.MOVEINVENTORY) ) && (
         <ReadyOrders setKey={setKey} globalOrders={globalOrders} orders={readyOrders} user={curUser} />
       )}
-      
+
       {(deliverdOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
+        <div className='ordersBtn'>
+          <button disabled={ordersBtn} onClick={() => {setShowDeliveredOrders(!showDeliveredOrders); setOrdersBtn(!ordersBtn)}}>You have Online Orders To Fulfil</button>
+        </div>
+      )}
+      
+      { showDeliveredOrders && (
         <DeliveredOrders globalOrders={globalOrders} orders={deliverdOrders} user={curUser} />
       )}
 
       {(onlineOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
         <div className='ordersBtn'>
-          <button disabled={ordersBtn} onClick={() => {setShowOnlineOrders(!showOnlineOrders); setOrdersBtn(!ordersBtn)}}>You have have Online Orders</button>
+          <button disabled={ordersBtn} onClick={() => {setShowOnlineOrders(!showOnlineOrders); setOrdersBtn(!ordersBtn)}}>You have Online Orders To Fulfil</button>
         </div>
       )}
       
       {showOnlineOrders && (
         <OnlineOrders globalOrders={globalOrders} orders={onlineOrders} user={curUser} />
+      )}
+
+      {(curbsideOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
+        <div className='ordersBtn'>
+          <button disabled={curbsideBtn} onClick={() => {setShowCurbsideOrders(!showCurbsideOrders); setCurbsideBtn(!ordersBtn)}}>Curbside Orders Ready For Pickup</button>
+        </div>
+      )}
+      
+      {showCurbsideOrders && (
+        <CurbsideOrders globalOrders={globalOrders} orders={curbsideOrders} user={curUser} />
       )}
     </div>
   )

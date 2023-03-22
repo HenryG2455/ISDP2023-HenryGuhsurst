@@ -90,24 +90,14 @@ export default function ViewFulfillOrder({ user,order, storeInv, globalOrders })
         }
     },[storeInv,theOrder])
 
-    function getNextDateByDayOfWeek(currentDate, dayOfWeek) {
-        const date = new Date(currentDate);
-        const targetDayOfWeek = dayOfWeek % 7;
-        const daysToAdd = targetDayOfWeek - date.getDay() + (targetDayOfWeek <= date.getDay() ? 7 : 0);
-        date.setDate(date.getDate() + daysToAdd);
-        return date.toISOString().slice(0, 19).replace('T', ' ');
-    }
+
     const Days = {SUNDAY:0, MONDAY:1, TUESDAY:2,WEDNESDAY:3, THURSDAY:4, FRIDAY:5, SATURDAY:6};
 
     const handleProcessOrder = () => {
         //console.log(pallet);
-        const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        const siteDeliveryDay = Days[user.site.dayOfWeek];
-        const deliveryDate = getNextDateByDayOfWeek(currentDate, siteDeliveryDay);
-        //console.log(deliveryDate);
-        const barcode = Math.random().toString(36).substring(2, 12);
-
         //Update the transaction
+
+
         const txnUpdateOrder = {
             siteIDTo: parseInt(reformedOrder.siteIDFrom),
             siteIDFrom: parseInt(reformedOrder.siteIDTo),
@@ -120,55 +110,12 @@ export default function ViewFulfillOrder({ user,order, storeInv, globalOrders })
             emergencyDelivery: reformedOrder.emergencyDelivery,
             txnitems: reformedOrder.txnitems
         }
-        //Check if Backorder already exists
-        let backOrderExists = false;
-        let tempBackOrder;
-        globalOrders.forEach(gorder => {
-            if(gorder.txnType === txnTypes.BACK_ORDER && gorder.siteIDTo === reformedOrder.siteIDFrom){
-                if(gorder.txnStatus !== txnStatus.CLOSED){
-                    backOrderExists = true;
-                    tempBackOrder = gorder;
-                }
-            }
-        });
-        console.log(backOrderExists);
-        let txnBackOrder={};
-        if(backOrderExists){
-            //Add to pre-exisiting back order
-            const tempupdatetxnBackOrder = {
-                siteIDTo: parseInt(tempBackOrder.siteIDFrom),
-                siteIDFrom: parseInt(tempBackOrder.siteIDTo),
-                status:txnStatus.READY,
-                shipDate:tempBackOrder.shipDate,
-                txnType:tempBackOrder.txnType,
-                barCode:tempBackOrder.barCode,
-                createdDate: tempBackOrder.createdDate,
-                deliveryID: tempBackOrder.deliveryID,
-                emergencyDelivery: tempBackOrder.emergencyDelivery,
-                txnitems: tempBackOrder.txnitems
-            }
-            txnBackOrder = tempupdatetxnBackOrder;
-        }else{
-            //Create the back order
-            const tempCreatetxnBackOrder = {
-                siteIDTo: parseInt(reformedOrder.siteIDFrom),
-                siteIDFrom: parseInt(reformedOrder.siteIDTo),
-                status:txnStatus.BACKORDER,
-                shipDate:deliveryDate,
-                txnType:txnTypes.BACK_ORDER,
-                barCode:barcode,
-                createdDate: currentDate,
-                deliveryID: 1,
-                emergencyDelivery: reformedOrder.emergencyDelivery,
-                txnitems: itemForBackOrder
-            }
-            console.log(tempCreatetxnBackOrder)
-            txnBackOrder = tempCreatetxnBackOrder;
-        }
+
         let tempInv = storeInv;
         console.log(storeInv)
         tempInv.forEach(invItem => {
             const matchingItem = reformedOrder.txnitems.find(item => item.ItemID === invItem.itemID);
+            
             if (matchingItem) {
                 invItem.quantity -= matchingItem.quantity;
             }
@@ -199,127 +146,79 @@ export default function ViewFulfillOrder({ user,order, storeInv, globalOrders })
               };
             }
         });
-        let updateInvBackOrder=[];
-        if(itemForBackOrder.length > 0){
-            itemForBackOrder.forEach(item => {
-                updateInvBackOrder.push({
-                    itemID: item.ItemID,
-                    siteID: 1,
-                    quantity: 0,
-                    itemLocation: 'Stock',
-                    reorderThreshold: 25,
-                })
-            })
-        }
+        const invCreate = updatedStoreOrder.txnitems;
         console.log(newInv)
-        console.log(updateInvBackOrder)
-
-        const finalInvForUpdate = [...newInv, ...updateInvBackOrder];
-        console.log(finalInvForUpdate)
-        
-
-
         //console.log(invUpdateitems)
         console.log(tempInv)
-        console.log(txnBackOrder)
         console.log(allItemsFromOriginalOrder)
-        console.log(itemForBackOrder);
         console.log(txnUpdateOrder)
-        console.log(updatedStoreOrder.txnitems);
-        const invCreate = updatedStoreOrder.txnitems;
-        
-        //This is to update the store order with the items and set to ready
+        console.log(updatedStoreOrder);
+        console.log(invCreate)
+
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        // fetch('http://localhost:8000/txn/storeOrder/update/'+reformedOrder.txnID, {
-        //     method: 'POST',
-        //     headers: {
-        //     'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({txn: txnUpdateOrder, removedItems: itemForBackOrder})
-        // })
-        // .then(response => {
-        //     if (!response.ok) {
-        //         throw new Error('Network response was not ok');
-        //     }
-        //     return response.json();
-        // })
-        // .then(data => {
-        //     console.log(data);
-        //         /*
-        //         These Fetches are a series of updates to teh database mostly around updateing the inventory count for
-        //         warehouse after teh items have been gathered and added to the Stoer order.
+        //This is to create the Cubside Inventory in the database
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        invCreate.forEach((item) => {
+            item.siteID = 11;
+            item.itemLocation = "Cubside";
+            item.reorderThreshold = 0;
+            delete item.txnID;
+            delete item.item;
+        });
+        console.log(invCreate)
+        
+        // This is to update the order with the items and set to ready
+        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        fetch('http://localhost:8000/txn/storeOrder/update/'+reformedOrder.txnID, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({txn: txnUpdateOrder, removedItems: itemForBackOrder})
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+                /*
+                These Fetches are a series of updates to teh database mostly around updateing the inventory count for
+                warehouse after teh items have been gathered and added to the Stoer order.
                 
-        //         As the inventory is being update we crete a new inventory for 
+                As the inventory is being update we crete a new inventory for 
 
 
                     
-        //         */
-        //         //This is to update the inventory
-        //         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        //         fetch('http://localhost:8000/inventory/update/'+2, {
-        //             method: 'POST',
-        //             headers: {
-        //             'Content-Type': 'application/json'
-        //             },
-        //             body: JSON.stringify({updateInventoryDto: itemForBackOrder.length<1?newInv:finalInvForUpdate , createInventoryDto: invCreate })
-        //         })
-        //         .then(response => {
-        //             if (!response.ok) {
-        //                 throw new Error('Network response was not ok');
-        //             }
-        //             return response.json();
-        //         })
-        //         .then(data => {
-        //             console.log(data);
-        //             console.log(itemForBackOrder.length);
-        //             //Creates back Order
-        //             if(itemForBackOrder.length>0){
-
-        //                 let URL = 'http://localhost:8000/txn/';
-        //                 if(backOrderExists){
-        //                     URL += 'backOrder/update/'+reformedOrder.txnID;
-        //                 }else{
-        //                     URL += 'backOrder/new';
-        //                 }
-        //                 console.log(URL)
-        //                 //This is to update the back order
-                        
-        //                 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        //                 fetch(URL, {
-        //                     method: 'POST',
-        //                     headers: {
-        //                     'Content-Type': 'application/json'
-        //                     },
-        //                     body: JSON.stringify({txn: txnBackOrder, txnItems: itemForBackOrder})
-        //                 })
-        //                 .then(response => {
-        //                     if (!response.ok) {
-        //                         throw new Error('Network response was not ok');
-        //                     }
-        //                     return response.json();
-        //                 })
-        //                 .then(data => {
-        //                     console.log(data);
-        //                     window.location.reload();
-        //                 })
-        //                 .catch(error => {
-        //                     console.error('There has been a problem with your fetch operation:', error);
-        //                 });
-        //             }else{
-        //                 window.location.reload();
-        //             }
-                    
-        //         })
-        //         .catch(error => {
-        //             console.error('There has been a problem with your fetch operation:', error);
-        //         });
-        // })
-        // .catch(error => {
-        //     console.error('There has been a problem with your fetch operation:', error);
-        // });
-
-
-        //this 
+                */
+                //This is to update the inventory
+                //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                fetch('http://localhost:8000/inventory/update/'+11, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({updateInventoryDto: newInv, createInventoryDto: invCreate })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                  console.log(data);
+                  window.location.reload();
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
     };
 
     const itemTableColumns = ['ItemID', 'Description', 'Qty', 'Avail','Added?'];
