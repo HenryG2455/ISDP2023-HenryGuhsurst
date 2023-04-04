@@ -11,6 +11,7 @@ export default function Navigation({ user, setUser }) {
     const [loggedOut, setLoggedOut] = useState(true);
     const [hideLogout, setHideLogout] = useState('');
     const [hideLogin, setHideLogin] = useState('');
+    const [productPage, setProductPage] = useState('hidden');
 
     useEffect(() => {
         // Check For User
@@ -59,6 +60,14 @@ export default function Navigation({ user, setUser }) {
             if(user.siteID === 9999){
                 setLoggedOut(true);
             }
+            if(user.user_permission.length>0){
+                user.user_permission.forEach(ele => {
+                    //console.log(ele.permissionID);
+                    if(ele.permissionID === 'ADDNEWPRODUCT'){
+                        setProductPage('')
+                    }
+                });
+            }
         }
     }
     function Logout(){
@@ -75,6 +84,7 @@ export default function Navigation({ user, setUser }) {
           <NavLink className= {loggedOut? ' hidden ':""+' navlink'} to="/locations">Site Locations</NavLink>
           <NavLink id='crud' className={crudName+' navlink'} to="/crud">Employee CRUD</NavLink>
           <NavLink id='crud' className={crudName+' navlink'} to="/crudreports">Records CRUD</NavLink>
+          <NavLink id='crud' className={productPage+' navlink'} to="/products">Add/Edit Product</NavLink>
           <a id='login' className={hideLogin} onClick={Logout}>Login</a>
           <a id='logout' className={hideLogout} onClick={Logout}>Logout</a>
           

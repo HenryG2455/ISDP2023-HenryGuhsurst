@@ -3,6 +3,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Orders from './Tab-comps/Orders';
 import Inventory from './Tab-comps/Inventory';
+import LossReturns from './Tab-comps/Loss-Returns';
 
 
 function NavTabs({tempUser}) {
@@ -41,7 +42,7 @@ function NavTabs({tempUser}) {
             <Inventory user ={curUser}/>
         </Tab>
         <Tab eventKey="loss/returns" title="Loss/Returns">
-
+            <LossReturns user ={curUser}/>
         </Tab>
         <Tab eventKey="reports" title="Reports">
 

@@ -46,6 +46,9 @@ export class InventoryService {
       const items = await this.prisma.inventory.findMany({
         where:{
           siteID: id
+        },
+        include:{
+          item: true,
         }
       });
       return items;

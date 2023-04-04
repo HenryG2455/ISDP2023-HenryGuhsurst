@@ -15,6 +15,7 @@ import CreateNewSite from './components/Location-comps/CreateNewSite';
 import Acadia from './Acadia/Acadia';
 import CustomerPage from './customer/CustomerPage';
 import CustomerSearch from './customer/CustomerSearch';
+import Products from './components/Products/Products';
  
 function App(){
     const [user, setUser] = useState(null);
@@ -43,6 +44,7 @@ function App(){
               <Routes>
                   <Route index element={<DashBoard user={user} setUser={setUser}/>} />
                   <Route path="/acadia" element={<Acadia user={user} setUser={setUser}/>} />
+                  <Route path="/products" element={<Products user={user} setUser={setUser}/>} />
                   <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
                   <Route path="/crud" element={<EmployeeCRUD  user={user}/>} exact/>
                   <Route path="/crudreports" element={<RecordCRUD  user={user}/>} exact/>

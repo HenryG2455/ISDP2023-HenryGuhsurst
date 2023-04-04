@@ -20,6 +20,27 @@
     margin-left: 2px;
     margin-right: 2px;
 }
+.flexBottom{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.flexChild{
+    position: relative;
+    flex: 1;
+}
+#notesLabel{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#notes{
+    margin-left: 3rem;
+    font-size: small;
+}
+#lossReturn{
+    margin-left: 2rem;
+}
 
 .table-container-record {
     max-height: 600px !important; /* set a fixed height */
