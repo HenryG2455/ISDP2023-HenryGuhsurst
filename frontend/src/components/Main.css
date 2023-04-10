@@ -50,6 +50,15 @@
     margin-left: 2px;
     margin-right: 2px;
 }
+
+.table-container-LR {
+    max-height: 450px !important; /* set a fixed height */
+    overflow: auto !important;
+    border: thin solid darkgray;
+    margin-bottom: 20px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
 .table-itemcontainer{
     max-height: 300px !important; /* set a fixed height */
     overflow: auto !important;

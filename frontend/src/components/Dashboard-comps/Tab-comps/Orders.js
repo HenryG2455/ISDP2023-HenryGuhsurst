@@ -1,15 +1,16 @@
 import React, { useState, useEffect} from 'react';
 import OrdersTable from './Order-comps/OrdersTable';
 import NewStoreOrder from './Order-comps/NewStoreOrder';
-import { constants,txnStatus, } from '../../../data/Constants'
+import { constants,txnStatus, txnTypes, } from '../../../data/Constants'
 import '../../Main.css';
 import RecieveOrders from './Order-comps/RecieveOrders';
 import OrdersToFulfill from './Order-comps/Fulfil-comps/OrdersToFulfill';
 import DeliveredOrders from './Order-comps/Deliver-comps/DeliveredOrders';
 import ReadyOrders from './Order-comps/ReadyOrders';
 import OnlineOrders from './Order-comps/Online-comps/OnlineOrders';
-import { Button, Table } from 'react-bootstrap';
 import CurbsideOrders from './Order-comps/Online-comps/CurbsideOrders';
+import SupplierOrders from './Order-comps/Supplier-comps/SupplierOrders';
+import NewSupplierOrder from './Order-comps/Supplier-comps/NewSupplierOrder';
 
 
 
@@ -17,10 +18,7 @@ function Orders({user, setKey})  {
     const hidden =  ' hidden';
     const [curUser, setCurUser] = useState(null)
     const [hiddenNameNewStoreOrder, setHiddenNameSO] = useState(hidden);
-    const [hiddenNameRecieveStoreOrder, setHiddenNameRSO] = useState(hidden);
-    const [hiddenNameRSOPage, setHiddenNameRSOPage] = useState(true);
     const [hiddenNameBack, setHiddenNameB] = useState(hidden);
-    const [errorText, setErrorText] = useState('');
     const [orders, setOrders] = useState(null);
     const [showComponent, setShowComponent] = useState(true);
     const [sites, setSites] = useState([]);
@@ -37,6 +35,10 @@ function Orders({user, setKey})  {
     const [curbsideOrders, setCurbsideOrders] = useState([]);
     const [showCurbsideOrders, setShowCurbsideOrders] = useState(false);
     const [showDeliveredOrders, setShowDeliveredOrders] = useState(false);
+    const [supplierOrder, setSupplierOrders] = useState([]);
+    const [showSupplier, setShowSupplier] = useState(false);
+    const [showNewSupplier, setShowNewSupplier] = useState(false);
+    const [openSuppOrder,setOpenSuppOrder]=useState(null);
 
 
     useEffect(()=>{
@@ -179,7 +181,26 @@ function Orders({user, setKey})  {
         setShowFulfill(true);
         setOrders(orders);
       }
-      else{
+      //Can the Wharehouse manager make a new Supplier order or Add to the Current one
+      else if(user.user_permission.find(permission => permission.permissionID === constants.CREATESUPPLIERORDER)){
+        setHiddenNameB(" ");
+        const suppOrders = [];
+        orders.forEach(order => {
+          if (order.txnType === txnTypes.SUPPLIER_ORDER) {
+            suppOrders.push(order);
+          }
+        });
+        suppOrders.forEach(order => {
+          if (order.status === txnStatus.NEW) {
+            setShowNewSupplier(true);
+            setOpenSuppOrder(order);
+          }else{
+            setHiddenNameB(" ");
+          }
+        });
+        setSupplierOrders(suppOrders);
+
+      }else{
         setOrders(orders);
       }
     }
@@ -204,7 +225,6 @@ function Orders({user, setKey})  {
           });
           //console.log(temps)
           setOrdersNeedingToBeRecieved(temps)
-          setHiddenNameRSO('');
         }
       }
     }
@@ -214,7 +234,6 @@ function Orders({user, setKey})  {
     function handleRecieveOrders(){
       setHiddenNameSO(hidden);
       setHiddenNameB('');
-      setHiddenNameRSOPage('');
       console.log("here");
 
     }
@@ -224,50 +243,77 @@ function Orders({user, setKey})  {
 
   return (
     <div className='mainPageContainer'>
-      {showComponent ? <OrdersTable user={curUser}  orders={orders} setShowComponent={setShowComponent}/> : <NewStoreOrder setShowComponent={setShowComponent} sites={sites} user={curUser}  />}
-      <button className={hiddenNameNewStoreOrder} onClick={() => {setShowComponent(!showComponent); setHiddenNameB(''); setHiddenNameSO(hidden);}}>New Store Order</button>
-      <button className={hiddenNameBack} onClick={() => {setShowComponent(!showComponent);  setHiddenNameB(hidden); setHiddenNameSO('');}}>Back</button>
-      
-      {(ordersNeedingToBeRecieved.length > 0 && user.posn.permissionLevel === constants.WAREHOUSE_MANAGER ) && (
-        <RecieveOrders orders={ordersNeedingToBeRecieved}  user={curUser} />
-      )}
+      {curUser != null && (
+        <div>
+          {showComponent ? <OrdersTable user={curUser}  orders={orders} setShowComponent={setShowComponent}/> : <NewStoreOrder setShowComponent={setShowComponent} sites={sites} user={curUser}  />}
+          <button className={hiddenNameNewStoreOrder} onClick={() => {setShowComponent(!showComponent); setHiddenNameB(''); setHiddenNameSO(hidden);}}>New Store Order</button>
+          <button className={hiddenNameBack} onClick={() => {setShowComponent(!showComponent);  setHiddenNameB(hidden); setHiddenNameSO('');}}>Back</button>
+          
+          {(ordersNeedingToBeRecieved.length > 0 && curUser.posn.permissionLevel === constants.WAREHOUSE_MANAGER ) && (
+            <RecieveOrders orders={ordersNeedingToBeRecieved}  user={curUser} />
+          )}
 
-      {(showFulfill && ordersNeedingToBeFulfilled.length>0) && (
-        <OrdersToFulfill globalOrders={globalOrders} orders={ordersNeedingToBeFulfilled} user={curUser} />
-      )}
+          {(showFulfill && ordersNeedingToBeFulfilled.length>0) && (
+            <OrdersToFulfill globalOrders={globalOrders} orders={ordersNeedingToBeFulfilled} user={curUser} />
+          )}
 
-      {(readyOrders.length > 0 && (user.posn.positionID === 6 || user.posn.positionID === 4  || user.posn.permissionLevel === constants.ADMINISTRATOR)&& user.user_permission.find(permission => permission.permissionID === constants.MOVEINVENTORY) ) && (
-        <ReadyOrders setKey={setKey} globalOrders={globalOrders} orders={readyOrders} user={curUser} />
-      )}
+          {(readyOrders.length > 0 && (curUser.posn.positionID === 6 || curUser.posn.positionID === 4  || curUser.posn.permissionLevel === constants.ADMINISTRATOR)&& curUser.user_permission.find(permission => permission.permissionID === constants.MOVEINVENTORY) ) && (
+            <ReadyOrders setKey={setKey} globalOrders={globalOrders} orders={readyOrders} user={curUser} />
+          )}
 
-      {(deliverdOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
-        <div className='ordersBtn'>
-          <button disabled={ordersBtn} onClick={() => {setShowDeliveredOrders(!showDeliveredOrders); setOrdersBtn(!ordersBtn)}}>You have Online Orders To Fulfil</button>
+          {(deliverdOrders.length>0 &&  curUser.posn.permissionLevel === constants.STORE_MANAGER) && (
+            <div className='ordersBtn'>
+              <button disabled={ordersBtn} onClick={() => {setShowDeliveredOrders(!showDeliveredOrders); setOrdersBtn(!ordersBtn)}}>You have Online Orders To Fulfil</button>
+            </div>
+          )}
+          
+          { showDeliveredOrders && (
+            <DeliveredOrders globalOrders={globalOrders} orders={deliverdOrders} user={curUser} />
+          )}
+
+          {(onlineOrders.length>0 &&  curUser.posn.permissionLevel === constants.STORE_MANAGER) && (
+            <div className='ordersBtn'>
+              <button disabled={ordersBtn} onClick={() => {setShowOnlineOrders(!showOnlineOrders); setOrdersBtn(!ordersBtn)}}>You have Online Orders To Fulfil</button>
+            </div>
+          )}
+          
+          {showOnlineOrders && (
+            <OnlineOrders globalOrders={globalOrders} orders={onlineOrders} user={curUser} />
+          )}
+
+          {(curbsideOrders.length>0 &&  curUser.posn.permissionLevel === constants.STORE_MANAGER) && (
+            <div className='ordersBtn'>
+              <button disabled={curbsideBtn} onClick={() => {setShowCurbsideOrders(!showCurbsideOrders); setCurbsideBtn(!ordersBtn)}}>Curbside Orders Ready For Pickup</button>
+            </div>
+          )}
+          
+          {showCurbsideOrders && (
+            <CurbsideOrders globalOrders={globalOrders} orders={curbsideOrders} user={curUser} />
+          )}
+
+          {(supplierOrder.length>=0 &&  curUser.posn.permissionLevel === constants.WAREHOUSE_MANAGER) && (
+            <div className='ordersBtn'>
+              <button disabled={showSupplier} onClick={() => {setShowSupplier(!showSupplier)}}>Show Supplier Orders</button>
+            </div>
+          )}
+          {showSupplier && (
+            <button className={showSupplier?'':'hidden'} onClick={() => {setShowSupplier(!showSupplier)}}>Close</button>
+          )}
+          
+          {showSupplier && (
+            <SupplierOrders globalOrders={globalOrders} orders={supplierOrder} user={curUser} />
+          )}
+
+          {(showNewSupplier) && (
+            <div className='ordersBtn'>
+              <button disabled={showNewSupplier} onClick={() => {setShowNewSupplier(!showNewSupplier)}}>New/Open Supplier</button>
+            </div>
+          )}
+          
+          {showNewSupplier && (
+            <NewSupplierOrder globalOrders={globalOrders} orders={supplierOrder} user={curUser} />
+          )}
         </div>
-      )}
-      
-      { showDeliveredOrders && (
-        <DeliveredOrders globalOrders={globalOrders} orders={deliverdOrders} user={curUser} />
-      )}
-
-      {(onlineOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
-        <div className='ordersBtn'>
-          <button disabled={ordersBtn} onClick={() => {setShowOnlineOrders(!showOnlineOrders); setOrdersBtn(!ordersBtn)}}>You have Online Orders To Fulfil</button>
-        </div>
-      )}
-      
-      {showOnlineOrders && (
-        <OnlineOrders globalOrders={globalOrders} orders={onlineOrders} user={curUser} />
-      )}
-
-      {(curbsideOrders.length>0 &&  user.posn.permissionLevel === constants.STORE_MANAGER) && (
-        <div className='ordersBtn'>
-          <button disabled={curbsideBtn} onClick={() => {setShowCurbsideOrders(!showCurbsideOrders); setCurbsideBtn(!ordersBtn)}}>Curbside Orders Ready For Pickup</button>
-        </div>
-      )}
-      
-      {showCurbsideOrders && (
-        <CurbsideOrders globalOrders={globalOrders} orders={curbsideOrders} user={curUser} />
       )}
     </div>
   )

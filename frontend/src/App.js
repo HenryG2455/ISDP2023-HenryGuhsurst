@@ -16,6 +16,7 @@ import Acadia from './Acadia/Acadia';
 import CustomerPage from './customer/CustomerPage';
 import CustomerSearch from './customer/CustomerSearch';
 import Products from './components/Products/Products';
+import NewProduct from './components/Products/NewProduct';
  
 function App(){
     const [user, setUser] = useState(null);
@@ -45,6 +46,7 @@ function App(){
                   <Route index element={<DashBoard user={user} setUser={setUser}/>} />
                   <Route path="/acadia" element={<Acadia user={user} setUser={setUser}/>} />
                   <Route path="/products" element={<Products user={user} setUser={setUser}/>} />
+                  <Route path="/products/new" element={<NewProduct user={user} setUser={setUser}/>} />
                   <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
                   <Route path="/crud" element={<EmployeeCRUD  user={user}/>} exact/>
                   <Route path="/crudreports" element={<RecordCRUD  user={user}/>} exact/>

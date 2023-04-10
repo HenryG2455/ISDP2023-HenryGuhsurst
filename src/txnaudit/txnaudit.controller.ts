@@ -8,7 +8,7 @@ export class TxnauditController {
   constructor(private readonly txnauditService: TxnauditService) {}
 
   @Post()
-  create(@Body() createTxnauditDto: CreateTxnauditDto) {
+  create(@Body() createTxnauditDto: CreateTxnauditDto, user: any) {
     return this.txnauditService.create(createTxnauditDto);
   }
 

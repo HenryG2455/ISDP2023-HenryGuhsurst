@@ -7,14 +7,14 @@ import { UpdateItemDto } from './dto/update-item.dto';
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
-  @Post()
-  create(@Body() createItemDto: CreateItemDto) {
-    return this.itemService.create(createItemDto);
-  }
-
   @Get()
   findAll() {
     return this.itemService.findAll();
+  }
+
+  @Get('count')
+  findCount() {
+    return this.itemService.findCount();
   }
 
   @Get(':id')
@@ -27,9 +27,19 @@ export class ItemController {
     return this.itemService.findMany(itemIds);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
-    return this.itemService.update(+id, updateItemDto);
+  @Post('update')
+  update( @Body() item: any, @Body() user:any) {
+    return this.itemService.update(item,user);
+  }
+  
+  @Post('remove')
+  deactivate( @Body() itemId: any, @Body() user:any) {
+    return this.itemService.deactivate(+itemId.itemID);
+  }
+
+  @Post('create/newitem')
+  makeItem( @Body() tempItem:any, @Body() user:any) {
+    return this.itemService.create(tempItem ,user);
   }
 
   @Delete(':id')

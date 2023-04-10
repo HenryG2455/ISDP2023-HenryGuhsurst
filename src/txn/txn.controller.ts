@@ -49,6 +49,16 @@ export class TxnController {
     return this.txnService.findOne(+id);
   }
 
+  @Post('loss')
+  loss(@Body() txn: any ,@Body() txnItems: any,@Body() user: any) {
+    return this.txnService.createLR(txn,txnItems,user);
+  }
+
+  @Post('return')
+  return(@Body() txn: any ,@Body() txnItems: any,@Body() user: any) {
+    return this.txnService.createLR(txn,txnItems,user);
+  }
+
   @Post('storeOrder/update/:id')
   updateStoreOrder(@Param('id') id: string,@Body() updateinfo: any) {
     let txn =updateinfo.txn;
@@ -123,6 +133,8 @@ export class TxnController {
   readyOrder(@Param('id') id: string, @Body() updateTxnDto: UpdateTxnDto) {
     return this.txnService.readyOrder(+id,updateTxnDto);
   }
+  
+  
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
