@@ -105,14 +105,6 @@ function Reports({user}) {
     }
   };
 
-  const handleView = () => {
-    // Implement the logic to display the visual graph of the report
-  };
-
-  const handleDownload = () => {
-    // Implement the logic to download the report as a CSV file
-  };
-
 
   const handlePrint = async () => {
     let reportTypeURL = getReportURL(report);
@@ -231,7 +223,7 @@ function Reports({user}) {
           />
         </div>
         <div>
-          <button disabled={createdReport===null?true:false} onClick={handleView}>View</button>
+          <button disabled={createdReport===null?true:false} onClick={handleDownloadCSV}>Download</button>
           <button onClick={handlePrint}>Print</button>
         </div>
       </div>
@@ -259,7 +251,6 @@ function Reports({user}) {
               </tbody>
             </Table>
           </div>
-          <button onClick={handleDownloadCSV}>Download CSV</button>
         </div>
       ):(
         <div className='App'>
