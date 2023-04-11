@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function NewProduct({user}) {
+  const navigate = useNavigate();
   // State for form fields
   
 
@@ -115,6 +117,7 @@ function NewProduct({user}) {
         notes: '',
         caseSize: 1,
       });
+      navigate('/products')
     } else {
       //alert('Error adding item. Please try again.');
     }
