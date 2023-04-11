@@ -233,6 +233,26 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
         
         //This is to update the store order with the items and set to ready
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        let txnAudit = {
+            txnID:reformedOrder.txnID,
+            txnType: "txnUpdate",
+            status: "Success",
+            SiteID: user.siteID,
+            deliveryID: reformedOrder.deliveryID,
+            employeeID: user.employeeID,
+            notes: user.username+' updated txn',
+          };
+          fetch('http://localhost:8000/txnaudit/new', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(txnAudit)
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
         fetch('http://localhost:8000/txn/storeOrder/update/'+reformedOrder.txnID, {
             method: 'POST',
             headers: {
@@ -259,6 +279,26 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                 */
                 //This is to update the inventory
                 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                let txnAudit2 = {
+                    txnID:reformedOrder.txnID,
+                    txnType: "invUpdate",
+                    status: "Success",
+                    SiteID: 2,
+                    deliveryID: reformedOrder.deliveryID,
+                    employeeID: user.employeeID,
+                    notes: user.username+' updated inventory',
+                  };
+                  fetch('http://localhost:8000/txnaudit/new', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(txnAudit2)
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log(data);
+                  })
                 fetch('http://localhost:8000/inventory/update/'+2, {
                     method: 'POST',
                     headers: {
@@ -288,6 +328,26 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                         //This is to update the back order
                         
                         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                        let txnAudit3 = {
+                            txnID:reformedOrder.txnID,
+                            txnType: "txnUpdate",
+                            status: "Success",
+                            SiteID: user.siteID,
+                            deliveryID: reformedOrder.deliveryID,
+                            employeeID: user.employeeID,
+                            notes: user.username+' updated txn',
+                          };
+                          fetch('http://localhost:8000/txnaudit/new', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(txnAudit3)
+                          })
+                          .then(response => response.json())
+                          .then(data => {
+                            console.log(data);
+                          })
                         fetch(URL, {
                             method: 'POST',
                             headers: {

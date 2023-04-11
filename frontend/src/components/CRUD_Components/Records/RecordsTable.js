@@ -2,7 +2,7 @@ import React, { useState, useEffect} from "react";
 import EditForm from './EditForm';
 import Table from 'react-bootstrap/Table';
 
-const RecordsTable = ({ txns }) => {
+const RecordsTable = ({ user,txns }) => {
   const [selectedEmployee, setSelectedEmployee] = useState({});
   useEffect(()=>{
     //console.log(employees);
@@ -13,10 +13,30 @@ const RecordsTable = ({ txns }) => {
     setSelectedEmployee(employee);
   };
 
-  async function cancelTxn(event){
-      let id = parseInt(event.target.value);
+  async function cancelTxn(txn){
+
       //console.log(typeof id);
-      const response = await fetch("http://localhost:8000/txn/cancel/"+id, 
+      let txnAudit = {
+        txnID:txn.txnID,
+        txnType: txn.txnType,
+        status: txn.status,
+        SiteID: user.siteID,
+        deliveryID: txn.deliveryID,
+        employeeID: user.employeeID,
+        notes: user.username+' Edited Order',
+      };
+      fetch('http://localhost:8000/txnaudit/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(txnAudit)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      const response = await fetch("http://localhost:8000/txn/cancel/"+txn.txnID, 
       {
           method: "Post",
           headers: {
@@ -54,7 +74,7 @@ const RecordsTable = ({ txns }) => {
               <td>{txn.txnType}</td>
               <td>{txn.txnID}</td>
               <td>
-                <button value={txn.txnID} onClick={cancelTxn}>Cancel</button>
+                <button value={txn.txnID} onClick={cancelTxn(txn)}>Cancel</button>
               </td>
             </tr>
             

@@ -39,6 +39,27 @@ export default function Login({user, setUser}) {
     //console.log(temphashedPassword);
     if(bcrypt.compareSync(password, hashedPassword)){
       delete emp.password;
+      let txnAudit = {
+        txnID:0,
+        txnType: "Login",
+        status :  "Success",
+        SiteID: emp.siteID,
+        deliveryID: 0,
+        employeeID: emp.employeeID,
+        notes: emp.username+' logged in',
+      };
+      fetch('http://localhost:8000/txnaudit/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(txnAudit)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        //window.location.reload();
+      })
       localStorage.setItem("User",JSON.stringify(emp));
       setUser(emp);
       console.log(emp)

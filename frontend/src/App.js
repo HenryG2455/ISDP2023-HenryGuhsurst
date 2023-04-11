@@ -50,7 +50,7 @@ function App(){
                   <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
                   <Route path="/crud" element={<EmployeeCRUD  user={user}/>} exact/>
                   <Route path="/crudreports" element={<RecordCRUD  user={user}/>} exact/>
-                  <Route path="/addemployee" element={<NewEmployeeForm/>} exact/>
+                  <Route path="/addemployee" element={<NewEmployeeForm user={user}/>} exact/>
                   <Route path="/home" element={<HomePage user={user} setUser={setUser}/>} exact/>
                   <Route path="/locations" element={<Locations user={user} setUser={setUser}/>} exact/>
                   <Route path="/addsite" element={<CreateNewSite user={user} setUser={setUser}/>} exact/>

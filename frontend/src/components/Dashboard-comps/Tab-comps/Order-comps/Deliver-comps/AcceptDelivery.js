@@ -29,10 +29,34 @@ export default function AcceptDelivery({ user,order, wharehouseInv, globalOrders
     },[order]);
     //this useEffect is to get the items from the order and check if they are in the wharehouse inventory
     
-
+    const addTxnAudit = (audit) => {
+        //This is to update the store order with the items and set to ready
+        
+          fetch('http://localhost:8000/txnaudit/new', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(audit)
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+    }
     const handleProcessOrder = () => {
         //This is to update the store order with the items and set to ready
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        let txnAudit = {
+            txnID:order.txnID,
+            txnType: "TxnUpdate",
+            status: "Success",
+            SiteID: user.siteID,
+            deliveryID: order.deliveryID,
+            employeeID: user.employeeID,
+            notes: user.username+' updated txn',
+          };
+          addTxnAudit(txnAudit);
         fetch('http://localhost:8000/txn/storeOrder/close/'+order.txnID, {
             method: 'POST',
             headers: {
@@ -53,6 +77,16 @@ export default function AcceptDelivery({ user,order, wharehouseInv, globalOrders
                 */
                 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 console.log(order.txnitems)
+                txnAudit = {
+                    txnID:order.txnID,
+                    txnType: "invUpdate",
+                    status: "Success",
+                    SiteID: user.siteID,
+                    deliveryID: order.deliveryID,
+                    employeeID: user.employeeID,
+                    notes: user.username+' updated inventory',
+                  };
+                  addTxnAudit(txnAudit);
                 fetch('http://localhost:8000/inventory/deliver/'+user.siteID, {
                     method: 'POST',
                     headers: {

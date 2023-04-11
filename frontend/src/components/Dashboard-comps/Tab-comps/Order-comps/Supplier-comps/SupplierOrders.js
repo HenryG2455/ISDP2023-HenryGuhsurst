@@ -15,6 +15,26 @@ function SupplierOrders({orders , user })  {
 
     const handleView = (order) => {
         console.log(order);
+        let txnAudit = {
+          txnID:order.txnID,
+          txnType: "txnClose",
+          status: "Success",
+          SiteID: 11,
+          deliveryID: order.deliveryID,
+          employeeID: user.employeeID,
+          notes: user.username+' updated inventory',
+        };
+        fetch('http://localhost:8000/txnaudit/new', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(txnAudit)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        })
         fetch('http://localhost:8000/txn/close/order/'+order.txnID, {
             method: 'POST',
             headers: {
@@ -31,6 +51,26 @@ function SupplierOrders({orders , user })  {
                 delete item.item;
             });
             console.log(inventoryDto)
+            let txnAudit2 = {
+              txnID:0,
+              txnType: "invUpdate",
+              status: "Success",
+              SiteID: 11,
+              deliveryID: 0,
+              employeeID: user.employeeID,
+              notes: user.username+' updated inventory',
+            };
+            fetch('http://localhost:8000/txnaudit/new', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(txnAudit2)
+            })
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+            })
             fetch('http://localhost:8000/inventory/removeInv/'+11, {
                 method: 'Delete',
                 headers: {

@@ -1,11 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTxnauditDto } from './dto/create-txnaudit.dto';
 import { UpdateTxnauditDto } from './dto/update-txnaudit.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { txnitems, txn, Prisma} from "@prisma/client";
 
 @Injectable()
 export class TxnauditService {
-  create(createTxnauditDto: CreateTxnauditDto) {
-    return 'This action adds a new txnaudit';
+  constructor(private prisma: PrismaService){}
+
+  async create(info: any) {
+    try {
+      console.log(info);
+      let {txnID, txnType, status, txnDate, SiteID, employeeID, deliveryID, notes} = info;
+      txnDate = new Date(txnDate);
+      const data: Prisma.txnauditCreateInput = {
+        txnID,
+        status,
+        txnType,
+        site:{
+          connect:{
+            siteID:+SiteID
+          },
+        },
+        employee:{
+          connect:{
+            employeeID:+employeeID
+            },
+        },
+        deliveryID,
+        notes,
+      }
+      
+      const txnaudit  = await this.prisma.txnaudit.create({ data: data }) // Get the txnID of the newly created row
+      console.log("RAN")
+      return txnaudit;
+    } catch (error) {
+      console.log(error)
+      return error;
+    }
   }
 
   findAll() {

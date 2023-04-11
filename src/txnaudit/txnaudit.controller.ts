@@ -7,10 +7,7 @@ import { UpdateTxnauditDto } from './dto/update-txnaudit.dto';
 export class TxnauditController {
   constructor(private readonly txnauditService: TxnauditService) {}
 
-  @Post()
-  create(@Body() createTxnauditDto: CreateTxnauditDto, user: any) {
-    return this.txnauditService.create(createTxnauditDto);
-  }
+  
 
   @Get()
   findAll() {
@@ -22,6 +19,10 @@ export class TxnauditController {
     return this.txnauditService.findOne(+id);
   }
 
+  @Post('new')
+  create(@Body() info: any) {
+    return this.txnauditService.create(info);
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTxnauditDto: UpdateTxnauditDto) {
     return this.txnauditService.update(+id, updateTxnauditDto);

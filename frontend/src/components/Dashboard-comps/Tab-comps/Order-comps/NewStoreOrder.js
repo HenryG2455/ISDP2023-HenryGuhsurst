@@ -128,6 +128,23 @@ function NewStoreOrder({user, sites , setShowComponent}) {
       const txnItems = notInInvItems.map(item => ({...item, quantity: +item.quantity}));
       console.log(txn);
       console.log(txnItems);
+      let txnAudit = {
+        txnID:0,
+        txnType: "txnCreate",
+        status: "Success",
+        SiteID: user.siteID,
+        deliveryID: 0,
+        employeeID: user.employeeID,
+        notes: user.username+' txn created',
+      };
+      fetch('http://localhost:8000/txnaudit/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(txnAudit)
+      })
+
       fetch('http://localhost:8000/txn/storeOrder/new', {
         method: 'POST',
         headers: {

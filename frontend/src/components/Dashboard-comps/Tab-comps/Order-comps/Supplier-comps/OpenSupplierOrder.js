@@ -59,6 +59,26 @@ const OpenSupplierOrder = ({ user, order }) => {
         });
         console.log(order);
         console.log(txnItems);
+        let txnAudit = {
+          txnID:order.txnID,
+          txnType: "txnUpdate",
+          status: "Success",
+          SiteID: user.siteID,
+          deliveryID: order.deliveryID,
+          employeeID: user.employeeID,
+          notes: user.username+' updated txn',
+        };
+        fetch('http://localhost:8000/txnaudit/new', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(txnAudit)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        })
         fetch('http://localhost:8000/txn/supplierOrder/update', {
             method: 'POST',
             headers: {
@@ -78,6 +98,26 @@ const OpenSupplierOrder = ({ user, order }) => {
     console.log(user);
     console.log(order);
     //Cancel new Order so I can make mutiple orders one for each supplier
+    let txnAudit2 = {
+      txnID:order.txnID,
+      txnType: "txnCancel",
+      status: "Success",
+      SiteID: user.siteID,
+      deliveryID: order.deliveryID,
+      employeeID: user.employeeID,
+      notes: user.username+' cancelled txn',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit2)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+    })
     fetch('http://localhost:8000/txn/supplierOrder/cancel/'+order.txnID,{
         method: 'POST',
         headers: {
@@ -126,6 +166,26 @@ const OpenSupplierOrder = ({ user, order }) => {
       })
       console.log(txn);
       console.log(txnItems);
+      let txnAudit3 = {
+        txnID:0,
+        txnType: "CreateTxn",
+        status: "Success",
+        SiteID: user.siteID,
+        deliveryID: 0,
+        employeeID: user.employeeID,
+        notes: user.username+' created txn',
+      };
+      fetch('http://localhost:8000/txnaudit/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(txnAudit3)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
       fetch('http://localhost:8000/txn/supplierOrder/new', {
           method: 'POST',
           headers: {

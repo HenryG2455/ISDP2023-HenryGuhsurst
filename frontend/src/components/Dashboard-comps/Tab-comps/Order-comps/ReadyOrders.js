@@ -82,7 +82,7 @@ function ReadyOrders({orders , user, setKey })  {
                 {selectedOrder.txnID === order.txnID && (
                     <tr>
                         <td colSpan="6">
-                            <MoveOrder setKey={setKey} setSelectedOrder={setSelectedOrder} order={selectedOrder} />
+                            <MoveOrder user={user} setKey={setKey} setSelectedOrder={setSelectedOrder} order={selectedOrder} />
                         </td>
                     </tr>
                 )}

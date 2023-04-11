@@ -84,6 +84,26 @@ const NewSupplierOrder = ({ user }) => {
     })});
     console.log(txn);
     console.log(txnItems);
+    let txnAudit = {
+      txnID:txn.txnID,
+      txnType: "txnUpdate",
+      status: "Success",
+      SiteID: user.siteID,
+      deliveryID: txn.deliveryID,
+      employeeID: user.employeeID,
+      notes: user.username+' updated txn',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+    })
     fetch('http://localhost:8000/txn/supplierOrder/new', {
         method: 'POST',
         headers: {

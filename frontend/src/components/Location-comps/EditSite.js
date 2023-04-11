@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from 'react'
 
 
-function EditSite({ site, setShowInitial, setSelectedOrder }) {
+function EditSite({ user,site, setShowInitial, setSelectedOrder }) {
   const [editedSite, setEditedSite] = useState(site);
   const [provinces, setProvinces] = useState([]);
   const [siteTypes, setSiteTypes] = useState([]);
@@ -37,6 +37,22 @@ function EditSite({ site, setShowInitial, setSelectedOrder }) {
       ...prevSite,
       ["distanceFromWH"]: temp,
     }));
+    let txnAudit = {
+      txnID:0,
+      txnType: "updatedSite",
+      status: "Success",
+      SiteID: site.siteID,
+      deliveryID: 0,
+      employeeID: user.employeeID,
+      notes: user.username+' added a new site',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
     fetch('http://localhost:8000/site/edit/site/'+site.siteID, {
       method: 'PUT',
       headers: {

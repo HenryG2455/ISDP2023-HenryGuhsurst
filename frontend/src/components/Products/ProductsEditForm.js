@@ -8,6 +8,22 @@ function ProductsEditForm({ item, user }) {
   };
 
   const handleSave = async () => {
+    let txnAudit = {
+      txnID:0,
+      txnType: "updateItem",
+      status: "Success",
+      SiteID: user.siteID,
+      deliveryID: 0,
+      employeeID: user.employeeID,
+      notes: user.username+' updated an item',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
     let res = await fetch('http://localhost:8000/item/update', {
       method: 'POST',
       headers: {

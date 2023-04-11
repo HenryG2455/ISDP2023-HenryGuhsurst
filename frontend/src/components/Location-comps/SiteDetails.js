@@ -22,7 +22,7 @@ const SiteDetails = ({ user, site, setSelectedOrder }) => {
 
   return (
     <div> 
-    {showInitial ? <SiteDetailsTable site={site}  setSelectedOrder={setSelectedOrder} /> : <EditSite setShowInitial={setShowInitial} site={site} setSelectedOrder={setSelectedOrder} />}
+    {showInitial ? <SiteDetailsTable site={site}  setSelectedOrder={setSelectedOrder} /> : <EditSite user={user} setShowInitial={setShowInitial} site={site} setSelectedOrder={setSelectedOrder} />}
     <button className={hiddenClass} onClick={toggleComponent}>Edit Site</button>
     </div>
   );

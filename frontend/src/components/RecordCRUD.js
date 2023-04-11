@@ -4,7 +4,7 @@ import { useNavigate} from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 
 let res;
-export default function RecordCRUD() {
+export default function RecordCRUD({user}) {
     const navigate = useNavigate();
     const [errorText, setErrorText] = useState('');
     const [txns, setTxns] = useState([]);
@@ -36,7 +36,7 @@ export default function RecordCRUD() {
   return (
     <div>
         <h4>Records CRUD Page</h4>
-        <RecordsTable  txns={txns} />
+        <RecordsTable user={user}  txns={txns} />
     </div>
   )
 }

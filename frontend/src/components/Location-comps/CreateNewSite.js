@@ -65,6 +65,22 @@ function AddSitePage({user, setUser}) {
       distanceFromWH: temp,
     };
     console.log(tempSite);
+    let txnAudit = {
+      txnID:0,
+      txnType: "Add Site",
+      status: "Success",
+      SiteID: user.siteID,
+      deliveryID: 0,
+      employeeID: user.employeeID,
+      notes: user.username+' added a new site',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
     fetch('http://localhost:8000/site/add/site', {
       method: 'POST',
       headers: {

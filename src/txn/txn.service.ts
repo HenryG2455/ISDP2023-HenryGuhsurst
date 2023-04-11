@@ -4,9 +4,8 @@ import { UpdateTxnDto } from './dto/update-txn.dto';
 import { txnitems, txn, Prisma} from "@prisma/client";
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTxnitemDto } from 'src/txnitems/dto/create-txnitem.dto';
-import Enumerable from 'linq';
 import {constants,txnTypes,txnStatus} from '../data/Constants.js';
-import { Inventory } from 'src/inventory/entities/inventory.entity';
+
 
 
 @Injectable()

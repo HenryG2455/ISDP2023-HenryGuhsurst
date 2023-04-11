@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import "../../../Main.css";
 import { useNavigate} from 'react-router-dom';
 
-export default function MoveOrder({ order, setSelectedOrder, setKey }) {
+export default function MoveOrder({ user,order, setSelectedOrder, setKey }) {
   const navigate = useNavigate();
   const [vehicleTypes, setVehicleTypes] = useState([]);
   const [deliveries, setDeliveries] = useState([]);
@@ -89,6 +89,22 @@ export default function MoveOrder({ order, setSelectedOrder, setKey }) {
     const data = {
       "deliveryID": deliveryID,
     }
+    let txnAudit = {
+      txnID:order.txnID,
+      txnType: "txnUpdate",
+      status: "Success",
+      SiteID: user.siteID,
+      deliveryID: order.deliveryID,
+      employeeID: user.employeeID,
+      notes: user.username+' updated inventory',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
     fetch("http://localhost:8000/txn/transit/order/"+order.txnID, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -99,6 +115,22 @@ export default function MoveOrder({ order, setSelectedOrder, setKey }) {
         throw Error('Could not fetch the data for that resource');
       } else {
         console.log(res.json());
+        let txnAudit2 = {
+          txnID:0,
+          txnType: "invUpdate",
+          status: "Success",
+          SiteID: 9999,
+          deliveryID: 0,
+          employeeID: user.employeeID,
+          notes: user.username+' updated inventory',
+        };
+        fetch('http://localhost:8000/txnaudit/new', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(txnAudit2)
+        })
         fetch('http://localhost:8000/inventory/update/transit/'+9999, {
                     method: 'POST',
                     headers: {

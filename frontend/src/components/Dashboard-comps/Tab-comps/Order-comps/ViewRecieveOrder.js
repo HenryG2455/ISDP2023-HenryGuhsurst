@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import '../../../Main.css';
 
 
-export default function ViewRecieveOrder({ order, wharehouseInv, setSelectedOrder,setAllOrders,allOrders }) {
+export default function ViewRecieveOrder({ user,order, wharehouseInv, setSelectedOrder,setAllOrders,allOrders }) {
     const [items, setItems] = useState([]);
     const [lessThan, setLessThan] = useState([]);
     let temp = [];
@@ -62,6 +62,22 @@ export default function ViewRecieveOrder({ order, wharehouseInv, setSelectedOrde
 
     const handleProcessOrder = () => {
         setSelectedOrder('');
+        let txnAudit = {
+            txnID:order.txnID,
+            txnType: "txnUpdate",
+            status: "Success",
+            SiteID: 1,
+            deliveryID: order.deliveryID,
+            employeeID: user.employeeID,
+            notes: user.username+' updated txn',
+          };
+          fetch('http://localhost:8000/txnaudit/new', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(txnAudit)
+          })
         fetch('http://localhost:8000/txn/process/order/'+order.txnID, {
             method: 'POST',
             headers: {

@@ -15,6 +15,26 @@ function AcadiaTransitTable({orders , user })  {
 
     const handleView = (order) => {
         console.log(order);
+        let txnAudit = {
+          txnID:order.txnID,
+          txnType: order.txnType,
+          status :  order.status,
+          SiteID: user.siteID,
+          deliveryID: order.deliveryID,
+          employeeID: user.employeeID,
+          notes: user.username+' Delivered Order',
+        };
+        fetch('http://localhost:8000/txnaudit/new', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(txnAudit)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+        })
         fetch('http://localhost:8000/txn/deliver/order/'+order.txnID, {
             method: 'POST',
             headers: {

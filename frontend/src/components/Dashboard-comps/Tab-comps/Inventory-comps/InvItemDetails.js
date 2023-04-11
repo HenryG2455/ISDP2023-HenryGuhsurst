@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function InvItemDetails({ selectedItem, setSelectedItem }) {
+function InvItemDetails({user, selectedItem, setSelectedItem }) {
   const [itemLocation, setItemLocation] = useState(selectedItem.itemLocation);
 
   const handleLocationChange = (event) => {
@@ -13,6 +13,26 @@ function InvItemDetails({ selectedItem, setSelectedItem }) {
     console.log(updatedItem);
     delete updatedItem.item;
     delete updatedItem.site;
+    let txnAudit = {
+      txnID:0,
+      txnType: "invUpdate",
+      status: "Success",
+      SiteID: user.siteID,
+      deliveryID: 0,
+      employeeID: user.employeeID,
+      notes: user.username+' updated inventory',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+    })
     fetch('http://localhost:8000/inventory/update/single/'+updatedItem.siteID, {
         method: 'POST',
         headers: {

@@ -77,7 +77,7 @@ function RecieveOrders({user,orders}) {
           {selectedOrder.txnID === order.txnID && (
             <tr>
               <td colSpan="6">
-                <ViewRecieveOrder allOrders={allOrders} setAllOrders={setAllOrders} order={selectedOrder} wharehouseInv={wharehouseInv} setSelectedOrder={setSelectedOrder}/>
+                <ViewRecieveOrder user={user} allOrders={allOrders} setAllOrders={setAllOrders} order={selectedOrder} wharehouseInv={wharehouseInv} setSelectedOrder={setSelectedOrder}/>
               </td>
             </tr>
           )}

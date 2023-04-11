@@ -78,6 +78,22 @@ function NewProduct({user}) {
     console.log(tempItem)
 
     // Replace with the actual API endpoint to create a new item
+    let txnAudit = {
+      txnID:0,
+      txnType: "ItemCreated",
+      status: "Success",
+      SiteID: user.siteID,
+      deliveryID: 0,
+      employeeID: user.employeeID,
+      notes: user.username+' added a new item',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
     const response = await fetch('http://localhost:8000/item/create/newitem', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

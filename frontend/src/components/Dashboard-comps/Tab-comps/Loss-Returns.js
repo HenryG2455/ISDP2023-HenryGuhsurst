@@ -49,6 +49,22 @@ const LossReturns = ({user}) => {
     console.log(txn)
     console.log(txnItems)
     if(lossReturn === 'LOSS'){
+      let txnAudit = {
+        txnID:0,
+        txnType: "LossCreate",
+        status: "Success",
+        SiteID: user.siteID,
+        deliveryID: 0,
+        employeeID: user.employeeID,
+        notes: user.username+' createed loss',
+      };
+      fetch('http://localhost:8000/txnaudit/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(txnAudit)
+      })
       fetch('http://localhost:8000/txn/loss', {
         method: 'POST',
         headers: {
@@ -62,6 +78,22 @@ const LossReturns = ({user}) => {
         window.location.reload();
       })
     }else{
+      let txnAudit = {
+        txnID:0,
+        txnType: "ReturnCreate",
+        status: "Success",
+        SiteID: user.siteID,
+        deliveryID: 0,
+        employeeID: user.employeeID,
+        notes: user.username+' created Return',
+      };
+      fetch('http://localhost:8000/txnaudit/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(txnAudit)
+      })
       fetch('http://localhost:8000/txn/return', {
           method: 'POST',
           headers: {

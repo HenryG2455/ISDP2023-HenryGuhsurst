@@ -242,7 +242,7 @@ function Inventory({user}) {
                     {selectedItem.itemID === item.itemID && (
                         <tr>
                             <td colSpan="6">
-                                <InvItemDetails setSelectedItem={setSelectedItem} selectedItem={selectedItem} />
+                                <InvItemDetails user={user} setSelectedItem={setSelectedItem} selectedItem={selectedItem} />
                             </td>
                         </tr>
                     )}

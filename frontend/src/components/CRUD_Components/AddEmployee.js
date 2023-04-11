@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function NewEmployeeForm() {
+function NewEmployeeForm({user}) {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -28,6 +28,27 @@ function NewEmployeeForm() {
       
     };
     console.log(employee);
+
+    let txnAudit = {
+      txnID:0,
+      txnType: "Add Employee",
+      status: "Success",
+      SiteID: employee.siteID,
+      deliveryID: 0,
+      employeeID: user.employeeID,
+      notes: user.username+' Added a new employee',
+    };
+    fetch('http://localhost:8000/txnaudit/new', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(txnAudit)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+    })
     const response = await fetch("http://localhost:8000/employee", {
       method: "POST",
       headers: {

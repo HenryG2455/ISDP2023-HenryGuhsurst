@@ -16,6 +16,26 @@ const EmployeeTable = ({ employees }) => {
   async function deleteEmp(event){
       let id = parseInt(event.target.value);
       //console.log(typeof id);
+      let txnAudit = {
+        txnID:0,
+        txnType: "Remove Emp",
+        status: "Success",
+        SiteID: selectedEmployee.siteID,
+        deliveryID: 0,
+        employeeID: selectedEmployee.employeeID,
+        notes: 'admin removed a employee',
+      };
+      fetch('http://localhost:8000/txnaudit/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(txnAudit)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
       const response = await fetch("http://localhost:8000/employee/active/"+id, 
       {
           method: "Post",
