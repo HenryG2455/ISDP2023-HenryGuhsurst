@@ -118,7 +118,8 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
             createdDate: reformedOrder.createdDate,
             deliveryID: reformedOrder.deliveryID,
             emergencyDelivery: reformedOrder.emergencyDelivery,
-            txnitems: reformedOrder.txnitems
+            txnitems: reformedOrder.txnitems,
+            notes: reformedOrder.notes
         }
         //Check if Backorder already exists
         let backOrderExists = false;
@@ -145,7 +146,8 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                 createdDate: tempBackOrder.createdDate,
                 deliveryID: tempBackOrder.deliveryID,
                 emergencyDelivery: tempBackOrder.emergencyDelivery,
-                txnitems: tempBackOrder.txnitems
+                txnitems: tempBackOrder.txnitems,
+                notes: 'Back Order'
             }
             txnBackOrder = tempupdatetxnBackOrder;
         }else{
@@ -160,7 +162,8 @@ export default function ViewFulfillOrder({ user,order, wharehouseInv, globalOrde
                 createdDate: currentDate,
                 deliveryID: 1,
                 emergencyDelivery: reformedOrder.emergencyDelivery,
-                txnitems: itemForBackOrder
+                txnitems: itemForBackOrder,
+                notes: 'Back Order'
             }
             console.log(tempCreatetxnBackOrder)
             txnBackOrder = tempCreatetxnBackOrder;

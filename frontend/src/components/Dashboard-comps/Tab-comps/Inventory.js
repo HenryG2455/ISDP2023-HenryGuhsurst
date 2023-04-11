@@ -24,6 +24,7 @@ function Inventory({user}) {
     const [invForEdit, setInvForEdit] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
     const [selectedItem, setSelectedItem] = useState({});
+    const [displayInventory, setDisplayInventory] = useState([]);
 
 
 
@@ -79,6 +80,7 @@ function Inventory({user}) {
             })
                 setInventory(tempData);
                 setSiteInventory(tempData);
+                setDisplayInventory(tempData.filter(item => item.siteID === user.siteID));
             });
         }
     }, [user]);
@@ -159,21 +161,39 @@ function Inventory({user}) {
 
     const handleSearch = (event) => {
         let text = event.target.value;
-        console.log(typeof text)
-        if(isNaN(text)){
-            text = text.toLowerCase();
+        console.log(typeof text);
+        console.log(isNaN(text));
+        console.log(filteredInventory);
+      
+        if (text === "") {
+          setDisplayInventory(filteredInventory);
+        } else if (isNaN(text)) {
+          text = text.toLowerCase();
+          console.log(filteredInventory);
+          let temp = filteredInventory;
+      
+          const filtered = temp.filter(
+            (item) =>
+              item.item.name.toLowerCase().includes(text) ||
+              item.itemLocation.toLowerCase().includes(text)
+          );
+          console.log(filtered);
+      
+          setDisplayInventory(filtered);
+        } else {
+          // Text is a number, filter by itemID or SKU
+          let temp = filteredInventory;
+      
+          const filtered = temp.filter(
+            (item) =>
+              item.itemID.toString().includes(text) || item.item.sku.includes(text)
+          );
+          console.log(filtered);
+      
+          setDisplayInventory(filtered);
         }
-        console.log(inventory);
-        const filtered = inventory.filter(item =>
-          item.item.name.toLowerCase().includes(text) ||
-          item.itemLocation.toLowerCase().includes(text) ||
-          item.item.sku.toLowerCase().includes(text) ||
-          item.itemID.toString().includes(text)
-        );
-        console.log(filtered)
         setSearchText(text);
-        setSiteInventory(filtered);
-    }
+      };
 
     function editInventoryForSite() {
         console.log(selectedSite)
@@ -206,7 +226,7 @@ function Inventory({user}) {
             </thead>
             <tbody>
             {items.length<1? <tr><td colSpan={5}>Loading!</td></tr>:       
-            filteredInventory.map((item, i) => (
+            displayInventory.map((item, i) => (
                 <React.Fragment key={item.itemID}>
                     <tr key={item.itemID} onClick={() => handleRowClick(item.itemID)} className={selectedRow === item.itemID ? " selected" : ""}>
                         <td>{item.itemID}</td>

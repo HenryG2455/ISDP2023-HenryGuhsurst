@@ -40,6 +40,8 @@ export class InventoryService {
     }
   }
 
+  
+
 
   async findStoreInv(id: number) {
     try {
@@ -282,6 +284,54 @@ export class InventoryService {
   
     await this.prisma.$transaction(updates);
     return updates
+  }
+
+  //REPORTS
+
+  async inventoryReport(info:any) {
+    try {
+      if(info.location === 'all'){
+        const inv = await this.prisma.inventory.findMany({
+          include:{
+            item: true,
+            site: true,
+          }
+        })
+        console.log(inv)
+        const formattedData = inv.map((item) => {
+          return {
+            item: item.item.name,
+            site: item.site.name,
+            quantity: item.quantity,
+            threshold: item.reorderThreshold,
+            location: item.itemLocation,
+          };
+        });
+        return formattedData;
+      }else{
+        const inv = await this.prisma.inventory.findMany({
+          where:{
+            siteID:+info.location
+          },
+          include:{
+            item: true,
+            site: true,
+          }
+        })
+        const formattedData = inv.map((item) => {
+          return {
+            item: item.item.name,
+            site: item.site.name,
+            quantity: item.quantity,
+            threshold: item.reorderThreshold,
+            location: item.itemLocation,
+          };
+        });
+        return formattedData;
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
   
   

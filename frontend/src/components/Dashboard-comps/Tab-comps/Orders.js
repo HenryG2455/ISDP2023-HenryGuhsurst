@@ -11,7 +11,7 @@ import OnlineOrders from './Order-comps/Online-comps/OnlineOrders';
 import CurbsideOrders from './Order-comps/Online-comps/CurbsideOrders';
 import SupplierOrders from './Order-comps/Supplier-comps/SupplierOrders';
 import NewSupplierOrder from './Order-comps/Supplier-comps/NewSupplierOrder';
-
+import OpenSupplierOrder from './Order-comps/Supplier-comps/OpenSupplierOrder';
 
 
 function Orders({user, setKey})  {
@@ -38,6 +38,8 @@ function Orders({user, setKey})  {
     const [supplierOrder, setSupplierOrders] = useState([]);
     const [showSupplier, setShowSupplier] = useState(false);
     const [showNewSupplier, setShowNewSupplier] = useState(false);
+    const [showOpenSupplier, setShowOpenSupplier] = useState(false);
+    const [showNewSupplierBtn, setShowNewSupplierBtn] = useState(true);
     const [openSuppOrder,setOpenSuppOrder]=useState(null);
 
 
@@ -172,6 +174,7 @@ function Orders({user, setKey})  {
             setShowFulfill(true);
           }
           isWarhouseManager(orders);
+          
         }else{
           setOrders(orders);
         }
@@ -182,25 +185,7 @@ function Orders({user, setKey})  {
         setOrders(orders);
       }
       //Can the Wharehouse manager make a new Supplier order or Add to the Current one
-      else if(user.user_permission.find(permission => permission.permissionID === constants.CREATESUPPLIERORDER)){
-        setHiddenNameB(" ");
-        const suppOrders = [];
-        orders.forEach(order => {
-          if (order.txnType === txnTypes.SUPPLIER_ORDER) {
-            suppOrders.push(order);
-          }
-        });
-        suppOrders.forEach(order => {
-          if (order.status === txnStatus.NEW) {
-            setShowNewSupplier(true);
-            setOpenSuppOrder(order);
-          }else{
-            setHiddenNameB(" ");
-          }
-        });
-        setSupplierOrders(suppOrders);
-
-      }else{
+      else{
         setOrders(orders);
       }
     }
@@ -224,7 +209,30 @@ function Orders({user, setKey})  {
             }
           });
           //console.log(temps)
-          setOrdersNeedingToBeRecieved(temps)
+          const filteredOrders = temps.filter(order => order.txnType !== txnTypes.SUPPLIER_ORDER);
+          setOrdersNeedingToBeRecieved(filteredOrders)
+        }
+        if(user.user_permission.find(permission => permission.permissionID === constants.CREATESUPPLIERORDER)){
+          setHiddenNameB(hidden)
+          const suppOrders = [];
+          orders.forEach(order => {
+            //console.log("triggered")
+            if (order.txnType === txnTypes.SUPPLIER_ORDER) {
+              //console.log("triggered")
+              suppOrders.push(order);
+            }
+          });
+          suppOrders.forEach(order => {
+            if (order.status === txnStatus.NEW) {
+              setShowNewSupplier(false);
+              setOpenSuppOrder(order);
+              setShowNewSupplierBtn(false);
+            }else if(order.status === txnStatus.NEW || order.status === txnStatus.SUBMITTED || order.status === txnStatus.DELIVERED){
+              setShowNewSupplierBtn(false);
+            }
+          });
+          setSupplierOrders(suppOrders);
+  
         }
       }
     }
@@ -263,7 +271,7 @@ function Orders({user, setKey})  {
 
           {(deliverdOrders.length>0 &&  curUser.posn.permissionLevel === constants.STORE_MANAGER) && (
             <div className='ordersBtn'>
-              <button disabled={ordersBtn} onClick={() => {setShowDeliveredOrders(!showDeliveredOrders); setOrdersBtn(!ordersBtn)}}>You have Online Orders To Fulfil</button>
+              <button disabled={ordersBtn} onClick={() => {setShowDeliveredOrders(!showDeliveredOrders); setOrdersBtn(!ordersBtn)}}>New Delivered Order</button>
             </div>
           )}
           
@@ -291,7 +299,7 @@ function Orders({user, setKey})  {
             <CurbsideOrders globalOrders={globalOrders} orders={curbsideOrders} user={curUser} />
           )}
 
-          {(supplierOrder.length>=0 &&  curUser.posn.permissionLevel === constants.WAREHOUSE_MANAGER) && (
+          {((supplierOrder.length>=0) && ((user.user_permission.find((permission) => permission.permissionID ===constants.CREATESUPPLIERORDER) !== undefined))) && (
             <div className='ordersBtn'>
               <button disabled={showSupplier} onClick={() => {setShowSupplier(!showSupplier)}}>Show Supplier Orders</button>
             </div>
@@ -304,14 +312,29 @@ function Orders({user, setKey})  {
             <SupplierOrders globalOrders={globalOrders} orders={supplierOrder} user={curUser} />
           )}
 
-          {(showNewSupplier) && (
+          { (showNewSupplierBtn && ((user.user_permission.find((permission) => permission.permissionID ===constants.CREATESUPPLIERORDER) !== undefined))) && (
             <div className='ordersBtn'>
-              <button disabled={showNewSupplier} onClick={() => {setShowNewSupplier(!showNewSupplier)}}>New/Open Supplier</button>
+              <button disabled={showNewSupplier} onClick={() => {setShowNewSupplier(!showNewSupplier)}}>New Supplier Order</button>
             </div>
           )}
-          
           {showNewSupplier && (
-            <NewSupplierOrder globalOrders={globalOrders} orders={supplierOrder} user={curUser} />
+            <button className={showNewSupplier?'':'hidden'} onClick={() => {setShowNewSupplier(!showNewSupplier)}}>Close</button>
+          )}
+          {showNewSupplier && (
+            <NewSupplierOrder user={curUser} />
+          )}
+
+          {(openSuppOrder!==null && (user.user_permission.find((permission) => permission.permissionID ===constants.CREATESUPPLIERORDER) !== undefined)) && (
+            <div className='ordersBtn'>
+              <button disabled={showOpenSupplier} onClick={() => {setShowOpenSupplier(!showOpenSupplier)}}>Open Supplier Order</button>
+            </div>
+          )}
+          {showOpenSupplier && (
+            <button className={showOpenSupplier?'':'hidden'} onClick={() => {setShowOpenSupplier(!showOpenSupplier)}}>Close</button>
+          )}
+          
+          {showOpenSupplier && (
+            <OpenSupplierOrder order={openSuppOrder} user={curUser} />
           )}
         </div>
       )}

@@ -170,13 +170,13 @@ const LossReturns = ({user}) => {
       </div>
       <div>
       <h6>Items:</h6>
-        <ol>
+        <ul>
           {txnItems.map((item) => (
             <li key={item.ItemID}>
               Item ID: {item.ItemID}, Quantity: {item.quantity}
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
       <div className='flexBottom'>
         <div className='flexChild'>

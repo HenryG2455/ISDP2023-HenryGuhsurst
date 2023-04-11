@@ -93,8 +93,8 @@ function SupplierOrders({orders , user })  {
           <tr>
             <th>From</th>
             <th>Txn ID</th>
-            <th>Pickup Day</th>
-            <th>Notes</th>
+            <th>Created Date</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -105,16 +105,7 @@ function SupplierOrders({orders , user })  {
                 <td>{order.site_txn_siteIDToTosite.name}</td>
                 <td>{order.txnID}</td>
                 <td>{dayOfWeek(new Date())}</td>
-                <td>{order.notes}</td>
-              </tr>
-              <tr>
-                <td colSpan="5">
-                    <label>
-                        Customer Signature:
-                        <input type="text" name="signature" onChange={signChange} required/>
-                    </label>
-                    <button disabled={deliverBtn} onClick={() => handleView(order)}>Deliver</button>
-                </td>
+                <td>{order.status}</td>
               </tr>
             </React.Fragment>
           ))}

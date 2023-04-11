@@ -32,6 +32,11 @@ export class EmployeeController {
     return this.employeeService.findAll();
   }
   
+  //REPORTS
+  @Post('report')
+  emergencyReport(@Body() info: any) {
+    return this.employeeService.report(info);
+  }
   
   
 

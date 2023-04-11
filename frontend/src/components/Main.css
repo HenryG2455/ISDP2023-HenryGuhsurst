@@ -141,3 +141,8 @@
     margin-bottom: 1rem;
     padding: 1rem;;
 }
+
+.border{
+    padding: 5px;
+    border: 1px solid black;
+}

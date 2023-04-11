@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { constants,txnStatus,txnTypes } from '../../../../../data/Constants';
 
-const NewSupplierOrder = ({ user }) => {
+const OpenSupplierOrder = ({ user, order }) => {
   const [suppliers, setSuppliers] = useState([]);
   const [items, setItems] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState('');
   const [supItems, setSupItems] = useState([]);
-  const [autoAdded, setAutoAdded] = useState([]);
+  const [removedItems, setRemovedItems] = useState([]);
 
   useEffect(() => {
+    console.log(order)
+    setSupItems(order.txnitems);
     fetch('http://localhost:8000/supplier')
       .then((response) => response.json())
       .then((data) => setSuppliers(data));
@@ -23,20 +25,8 @@ const NewSupplierOrder = ({ user }) => {
       .then((response) => response.json())
       .then((data) => {
         setInventory(data);
-        console.log(data)
-        let tempAuto=[];
-        data.forEach(e => {
-          if(e.quantity < e.reorderThreshold){
-            tempAuto.push(e);
-          }
-        });
-        tempAuto.forEach(e => {
-          e.quantity = (e.reorderThreshold-e.quantity);
-        })
-        setAutoAdded(tempAuto);
-        setSupItems(tempAuto);
       });
-  }, []);
+  }, [order]);
 
   const handleSupplierChange = (e) => {
     setSelectedSupplier(e.target.value);
@@ -55,58 +45,130 @@ const NewSupplierOrder = ({ user }) => {
     console.log(supItems)
   };
 
+
+    const handleSave = () => {
+        // Handle the submit action here
+        console.log(user);
+        let txnItems =[];
+        supItems.forEach(e => {
+            txnItems.push({
+                ItemID:e.item.itemID,
+                quantity:e.quantity,
+                txnID:order.txnID,
+            })
+        });
+        console.log(order);
+        console.log(txnItems);
+        fetch('http://localhost:8000/txn/supplierOrder/update', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({txn:order, txnItems:txnItems,removedItems:removedItems, user:user})
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            window.location.reload();
+        })
+    };
+
   const handleSubmit = () => {
     // Handle the submit action here
-    const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const currentDateObj = new Date();
-    currentDateObj.setDate(currentDateObj.getDate() + 7);
-    const dateAfter7Days = currentDateObj.toISOString().slice(0, 19).replace('T', ' ');
-    const barcode = Math.random().toString(36).substring(2, 12);
     console.log(user);
-    const txn ={
-      siteIDTo: user.siteID,
-      siteIDFrom: user.siteID,
-      status:txnStatus.NEW,
-      shipDate:dateAfter7Days,
-      txnType:txnTypes.SUPPLIER_ORDER,
-      barCode: barcode,
-      createdDate: currentDate,
-      deliveryID: null,
-      emergencyDelivery: null,
-      notes:''
-    }
-    
-    let txnItems =[];
-    supItems.forEach(e => {
-      txnItems.push({
-        ItemID:e.item.itemID,
-        quantity:e.quantity,
-    })});
-    console.log(txn);
-    console.log(txnItems);
-    fetch('http://localhost:8000/txn/supplierOrder/new', {
+    console.log(order);
+    //Cancel new Order so I can make mutiple orders one for each supplier
+    fetch('http://localhost:8000/txn/supplierOrder/cancel/'+order.txnID,{
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
         },
-        body: JSON.stringify({txn:txn, txnItems:txnItems, user:user})
-      })
-      .then(response => response.json())
-      .then(data => {
+        body: JSON.stringify({txn:order, user:user})
+
+    })
+    .then(response => response.json())
+    .then(data => {
         console.log(data);
-        window.location.reload();
+    })  
+    const groupedTxnItems = order.txnitems.reduce((acc, curr) => {
+      const supplierId = curr.item.supplierID;
+      if (!acc[supplierId]) {
+        acc[supplierId] = [];
+      }
+      acc[supplierId].push(curr);
+      return acc;
+    }, {});
+  
+    const newTxns = Object.keys(groupedTxnItems).map((supplierId) => {
+      return {
+        ...order,
+        txnitems: groupedTxnItems[supplierId],
+      };
+    });
+    // newTxns now contains an array of transactions with txnitems grouped by supplierID
+    console.log(newTxns);
+    const updatedTxns = newTxns.map(txn => {
+      const { txnID, ...rest } = txn;
+      return {
+        ...rest,
+        status: 'SUBMITTED',
+        notes:'For Supplier: ' + txn.txnitems[0].item.supplier.name,
+      };
+    });
+    console.log(updatedTxns);
+    updatedTxns.forEach(txn => {
+      let txnItems =[];
+      txn.txnitems.forEach(e => {
+          txnItems.push({
+              ItemID:e.item.itemID,
+              quantity:e.quantity,
+          })
       })
+      console.log(txn);
+      console.log(txnItems);
+      fetch('http://localhost:8000/txn/supplierOrder/new', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({txn:txn, txnItems:txnItems, user:user})
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          //window.location.reload();
+        })
+    });
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+    
+    // const txn ={
+    //   txnID: order.txnID,
+    //   siteIDTo: order.siteIDTo,
+    //   siteIDFrom: order.siteIDFrom,
+    //   status:txnStatus.SUBMITTED,
+    //   shipDate: order.shipDate,
+    //   txnType: order.txnType,
+    //   barCode:  order.barcode,
+    //   createdDate:  order.createdDate,
+    //   deliveryID:  order.deliveryID,
+    //   emergencyDelivery: order.emergencyDelivery,
+    //   notes: order.notes
+    // }
   };
 
   const handleRemoveItem = (item) => {
+    console.log(item)
     setSupItems(supItems.filter(selectedItem =>
-      selectedItem.itemID !== item.itemID
+      selectedItem.ItemID !== item.ItemID
     ));
+    setRemovedItems([...removedItems, item]);
   }
 
   return (
     <div className='border'>
-      <h2>New Supplier Order</h2>
+      <h2>Open Supplier Order</h2>
       <select value={selectedSupplier} onChange={handleSupplierChange}>
         <option value="">Select a supplier</option>
         {suppliers.map((supplier) => (
@@ -182,7 +244,8 @@ const NewSupplierOrder = ({ user }) => {
       </div>
 
       <button onClick={handleSubmit}>Submit</button>
+      <button onClick={handleSave}>Save</button>
     </div>
   );
 };
-export default NewSupplierOrder;
+export default OpenSupplierOrder;

@@ -60,4 +60,9 @@ export class InventoryController {
   remove(@Param('id') id: string,@Body() {inventoryDto}: any) {
     return this.inventoryService.removeItems(+id, inventoryDto);
   }
+  //REPORTS 
+  @Post('report')
+  inventoryReport(@Body() info:any) {
+    return this.inventoryService.inventoryReport(info);
+  }
 }

@@ -14,6 +14,8 @@ export class TxnController {
     return this.txnService.findAll();
   }
 
+  
+
   @Get('getall')
   findAllBeforeReady() {
     return this.txnService.findAll();
@@ -76,13 +78,32 @@ export class TxnController {
     return this.txnService.cancelTxn(+id);
   }
 
+  @Post('supplierOrder/new')
+  createSupp(@Body() data: any) {
+    console.log(data.txn)
+    console.log(data.txnItems)
+    return this.txnService.create(data.txn,data.txnItems, data.user);
+  }
+
+  @Post('supplierOrder/update')
+  updateSupp(@Body() data: any) {
+    console.log(data.txn)
+    console.log(data.txnItems)
+    return this.txnService.updateSuppOrder(data.txn,data.txnItems,data.removedItems, data.user);
+  }
+
+  @Post('supplierOrder/cancel/:id')
+  cancelSupp(@Param('id') id: string, @Body() data: any) {
+    return this.txnService.cancelTxn(+id);
+  }
+
   @Post('storeOrder/new')
   create(@Body() createTxnDto: any) {
     let txn =createTxnDto.txn;
     let txnItems = createTxnDto.txnItems
     console.log(txn)
     console.log(txnItems)
-    return this.txnService.create(txn,txnItems);
+    return this.txnService.create(txn,txnItems,createTxnDto.user);
   }
 
   @Post('onlineOrder/new')
@@ -91,7 +112,7 @@ export class TxnController {
     let txnItems = createTxnDto.txnItems
     console.log(txn)
     console.log(txnItems)
-    return this.txnService.create(txn,txnItems);
+    return this.txnService.create(txn,txnItems,createTxnDto.user);
   }
 
 
@@ -99,7 +120,7 @@ export class TxnController {
   createBackOrder(@Body() createTxnDto: any) {
     let txn =createTxnDto.txn;
     let txnItems = createTxnDto.txnItems
-    return this.txnService.create(txn,txnItems);
+    return this.txnService.create(txn,txnItems,createTxnDto.user);
   }
 
   @Post('backOrder/update/:id')
@@ -133,7 +154,45 @@ export class TxnController {
   readyOrder(@Param('id') id: string, @Body() updateTxnDto: UpdateTxnDto) {
     return this.txnService.readyOrder(+id,updateTxnDto);
   }
-  
+  //REPORTS
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  @Post('delivery/report')
+  deliveryReport(@Body() info: any) {
+    return this.txnService.deliveryReport(info);
+  }
+
+  @Post('storeorder/report')
+  SOReport(@Body() info: any) {
+    return this.txnService.storeOrdersReport(info);
+  }
+
+  @Post('backorder/report')
+  BOReport(@Body() info: any) {
+    return this.txnService.backOrdersReport(info);
+  }
+  @Post('supplier/report')
+  SuppOReport(@Body() info: any) {
+    return this.txnService.suppOrdersReport(info);
+  }
+
+  @Post('shipping/report')
+  ShippingReport(@Body() info: any) {
+    return this.txnService.shippingReport(info);
+  }
+
+  @Post('orders/report')
+  OrdersReport(@Body() info: any) {
+    return this.txnService.ordersReport(info);
+  }
+  @Post('emergency/report')
+  emergencyReport(@Body() info: any) {
+    return this.txnService.emergencyReport(info);
+  }
+
+  @Post('lossreturn/report')
+  lossReturnReport(@Body() info: any) {
+    return this.txnService.lossReturnReport(info);
+  }
   
 
   // @Delete(':id')

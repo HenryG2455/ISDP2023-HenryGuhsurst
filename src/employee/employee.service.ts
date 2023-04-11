@@ -117,4 +117,57 @@ export class EmployeeService {
     })
     return User;
   }
+
+  //Reports
+
+  async report(info:any) {
+    try {
+      if(info.location === 'all'){
+        const emps = await this.prisma.employee.findMany({
+          include:{
+            site: true,
+            posn: true,
+          }
+        })
+        console.log(emps)
+        const formattedData = emps.map((emp) => {
+          return {
+            id: emp.employeeID,
+            name: emp.firstName=' '+emp.lastName,
+            username: emp.username,
+            site: emp.site.name,
+            position: emp.posn.permissionLevel,
+            active: emp.active?'Yes':'No',
+            email: emp.email,
+          };
+        });
+        return formattedData;
+      }else{
+        const emps = await this.prisma.employee.findMany({
+          where:{
+            siteID: +info.location
+          },
+          include:{
+            site: true,
+            posn: true,
+          }
+        })
+        console.log(emps)
+        const formattedData = emps.map((emp) => {
+          return {
+            id: emp.employeeID,
+            name: emp.firstName=' '+emp.lastName,
+            username: emp.username,
+            site: emp.site.name,
+            position: emp.posn.permissionLevel,
+            active: emp.active?'Yes':'No',
+            email: emp.email,
+          };
+        });
+        return formattedData;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
