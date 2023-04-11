@@ -293,13 +293,19 @@ export class InventoryService {
       if(info.location === 'all'){
         const inv = await this.prisma.inventory.findMany({
           include:{
-            item: true,
+            item: {
+              include:{
+                supplier: true
+              }
+            },
             site: true,
           }
         })
         console.log(inv)
         const formattedData = inv.map((item) => {
           return {
+            itemID: item.itemID,
+            supplier: item.item.supplier.name,
             item: item.item.name,
             site: item.site.name,
             quantity: item.quantity,
@@ -314,12 +320,18 @@ export class InventoryService {
             siteID:+info.location
           },
           include:{
-            item: true,
+            item: {
+              include:{
+                supplier: true
+              }
+            },
             site: true,
           }
         })
         const formattedData = inv.map((item) => {
           return {
+            itemID: item.itemID,
+            supplier: item.item.supplier.name,
             item: item.item.name,
             site: item.site.name,
             quantity: item.quantity,

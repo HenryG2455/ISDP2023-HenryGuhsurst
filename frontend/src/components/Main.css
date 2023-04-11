@@ -146,3 +146,14 @@
     padding: 5px;
     border: 1px solid black;
 }
+.chart{
+    height: 600px;
+
+}
+
+
+#parent{display:flex;align-items:flex-start;justify-content:center;}
+
+#child{background:yellow;}
+
+#child{flex-grow:1;text-align:center;}

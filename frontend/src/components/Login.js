@@ -33,6 +33,7 @@ export default function Login({user, setUser}) {
     
   }
 
+
   const authenticateUser = (emp) =>{
     const hashedPassword = bcrypt.hashSync(emp.password, salt);
     console.log();
@@ -61,6 +62,7 @@ export default function Login({user, setUser}) {
         //window.location.reload();
       })
       localStorage.setItem("User",JSON.stringify(emp));
+
       setUser(emp);
       console.log(emp)
       if(emp.siteID === 9999){

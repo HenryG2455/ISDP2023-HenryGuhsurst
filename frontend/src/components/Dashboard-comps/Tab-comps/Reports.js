@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
+import { Line } from 'react-chartjs-2';
+import InventoryChart from './Reports-comps/InventoryChart';
+import AllInventoryChart from './Reports-comps/AllInventoryChart';
 
 
 function Reports({user}) {
@@ -10,6 +13,7 @@ function Reports({user}) {
   const [endDateT, setEndDate] = useState('');
   const [sites, setSites] = useState([]);
   const [reportInfo, setReportInfo] = useState([]);
+  const [data, setData] = useState({});
   
   //semi Fixed variables
   let removedSites = [2,3,11,9999];
@@ -140,6 +144,7 @@ function Reports({user}) {
 
     const data = await response.json();
     console.log(data)
+    setData(data);
     setCreatedReport(data)
     setReportInfo(data);
     // Implement the logic to convert the data to CSV and initiate download
@@ -184,6 +189,37 @@ function Reports({user}) {
     setReportInfo([]);
   }
 
+
+  const generateChartData = (data) => {
+    const chartData = {
+        labels: [],
+        datasets: [
+            {
+                label: 'My Chart',
+                data: [],
+                fill: false,
+                borderColor: 'rgba(75,192,192,1)'
+            }
+        ]
+    };
+
+    data.forEach(item => {
+      chartData.labels.push(item.createdDate); // Add the createdDate to the labels array
+
+      const itemCount = item.items.length; // Get the number of items in the current transaction
+
+      if (itemCount === 1) {
+          const itemName = item.items[0]; // Get the name of the item
+          const itemQuantity = parseInt(itemName.split('-')[1]); // Extract the quantity from the item name
+          chartData.datasets[0].data.push(itemQuantity); // Add the quantity to the data array
+      } else {
+          chartData.datasets[0].data.push(0); // If there are multiple items, set the quantity to 0
+      }
+  });
+
+    return chartData;
+  };
+
   return (
     <div>
       <button onClick={resetPage}>Reset</button>
@@ -227,6 +263,13 @@ function Reports({user}) {
           <button onClick={handlePrint}>Print</button>
         </div>
       </div>
+      {(createdReport!==null)&&(report==="Inventory")&& (
+        
+        <div id='parent' className='App chart'>
+          {location === 'all' ? <AllInventoryChart  id='child'  data={data}/>:<InventoryChart id='child'  data={data}/>}
+        </div>
+      )}
+      
       {reportInfo.length>0? (
         <div className='App'>
           <h5>Report Info:</h5>

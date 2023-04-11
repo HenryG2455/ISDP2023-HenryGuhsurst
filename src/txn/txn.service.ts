@@ -685,6 +685,11 @@ export class TxnService {
           },
         },
         include:{
+          txnitems: {
+            include: {
+              item: true,
+            },
+          },
           delivery: true,
           site_txn_siteIDToTosite: true,
           site_txn_siteIDFromTosite: true,
@@ -700,7 +705,11 @@ export class TxnService {
           From: order.site_txn_siteIDFromTosite.name,
           txnID: order.txnID,
           emergency: order.emergencyDelivery? 'Yes': 'No',
-          notes: order.notes,
+          price: order.txnitems.reduce((a, b) => a + (+b.item.costPrice * b.quantity), 0),
+          items: order.txnitems.map((item) => { 
+            return item.ItemID+','+item.item.name+','+item.quantity
+          }),
+
         };
       });
       return formattedData;
@@ -721,6 +730,11 @@ export class TxnService {
 
         },
         include:{
+          txnitems: {
+            include: {
+              item: true,
+            },
+          },
           delivery: true,
           site_txn_siteIDToTosite: true,
           site_txn_siteIDFromTosite: true,
@@ -736,7 +750,10 @@ export class TxnService {
           From: order.site_txn_siteIDFromTosite.name,
           txnID: order.txnID,
           emergency: order.emergencyDelivery? 'Yes': 'No',
-          notes: order.notes,
+          price: order.txnitems.reduce((a, b) => a + (+b.item.costPrice * b.quantity), 0),
+          items: order.txnitems.map((item) => { 
+            return item.ItemID+','+item.item.name+','+item.quantity
+          }),
         };
       });
       return formattedData;
@@ -776,11 +793,9 @@ export class TxnService {
           To: order.site_txn_siteIDToTosite.name,
           From: order.site_txn_siteIDFromTosite.name,
           mileage: order.site_txn_siteIDToTosite.distanceFromWH+'km.',
-          items: order.txnitems.map((item) => {
-            return [
-              '('+item.ItemID+' - '+item.item.name+' - '+item.quantity+')'  
-            ]
-          })
+          items: order.txnitems.map((item) => { 
+            return item.ItemID+','+item.item.name+','+item.quantity
+          }),
         };
       });
       return formattedData;
@@ -822,11 +837,9 @@ export class TxnService {
           To: order.site_txn_siteIDToTosite.name,
           From: order.site_txn_siteIDFromTosite.name,
           mileage: order.site_txn_siteIDToTosite.distanceFromWH+'km.',
-          items: order.txnitems.map((item) => {
-            return [
-              '('+item.ItemID+' - '+item.item.name+' - '+item.quantity+')'  
-            ]
-          })
+          items: order.txnitems.map((item) => { 
+            return item.ItemID+','+item.item.name+','+item.quantity
+          }),
         };
       });
       return formattedData;
@@ -847,6 +860,11 @@ export class TxnService {
             },
           },
           include:{
+            txnitems:{
+              include:{
+                item: true,
+              }
+            },
             delivery: true,
             site_txn_siteIDToTosite: true,
             site_txn_siteIDFromTosite: true,
@@ -861,6 +879,12 @@ export class TxnService {
             to: delivery.site_txn_siteIDToTosite.name,
             from: delivery.site_txn_siteIDFromTosite.name,
             emergency: delivery.emergencyDelivery? 'Yes': 'No',
+            items: delivery.txnitems.map((item) => { 
+              return item.ItemID+','+item.item.name+','+item.quantity
+            }),
+            price:"$"+ delivery.txnitems.map((item) => {
+              return item.quantity*+item.item.costPrice
+            }).reduce((a,b) => a+b),
           };
         });
         return formattedData;
@@ -927,6 +951,11 @@ export class TxnService {
             emergencyDelivery: true,
           },
           include:{
+            txnitems:{
+              include:{
+                item: true,
+              }
+            },
             delivery: true,
             site_txn_siteIDToTosite: true,
             site_txn_siteIDFromTosite: true,
@@ -940,7 +969,10 @@ export class TxnService {
             createdDate: new Date(delivery.createdDate).toISOString().split('T')[0],
             to: delivery.site_txn_siteIDToTosite.name,
             from: delivery.site_txn_siteIDFromTosite.name,
-            emergency: delivery.emergencyDelivery? 'Yes': 'No',
+            price: delivery.txnitems.reduce((a, b) => a + (+b.item.costPrice * b.quantity), 0),
+            items: delivery.txnitems.map((item) => {
+              return item.ItemID+','+item.item.name+','+item.quantity
+            }),
           };
         });
         return formattedData;
@@ -983,7 +1015,10 @@ export class TxnService {
             createdDate: new Date(delivery.createdDate).toISOString().split('T')[0],
             to: delivery.site_txn_siteIDToTosite.name,
             from: delivery.site_txn_siteIDFromTosite.name,
-            emergency: delivery.emergencyDelivery? 'Yes': 'No',
+            price: delivery.txnitems.reduce((a, b) => a + (+b.item.costPrice * b.quantity), 0),
+            items: delivery.txnitems.map((item) => {
+              return item.ItemID+','+item.item.name+','+item.quantity
+            }),
           };
         });
         return formattedData;
@@ -1027,7 +1062,7 @@ export class TxnService {
           notes: order.notes,
           items: order.txnitems.map((item) => {
             return [
-              '('+item.ItemID+' - '+item.item.name+' - '+item.quantity+')'  
+              item.ItemID+','+item.item.name+','+item.quantity
             ]
           })
         };
@@ -1072,7 +1107,7 @@ export class TxnService {
           notes: order.notes,
           items: order.txnitems.map((item) => {
             return [
-              '('+item.ItemID+' - '+item.item.name+' - '+item.quantity+')'  
+              item.ItemID+','+item.item.name+','+item.quantity
             ]
           })
         };
@@ -1120,7 +1155,7 @@ export class TxnService {
         supplier: order.txnitems[0].item.supplier.name,
         requestedItems: order.txnitems.map((item) => {
           return [
-            '[Supplier Name: '+item.item.supplier.name+', Items: ('+item.ItemID+' - '+item.item.name+' - '+item.quantity+')],'  
+           item.ItemID+','+item.item.name+','+item.quantity  
           ]
         })
       };
@@ -1159,7 +1194,7 @@ export class TxnService {
           notes: order.notes,
           items: order.txnitems.map((item) => {
             return [
-              '('+item.ItemID+' - '+item.item.name+' - '+item.quantity+')'  
+              item.ItemID+','+item.item.name+','+item.quantity  
             ]
           })
         };
@@ -1216,7 +1251,7 @@ export class TxnService {
           notes: order.notes,
           items: order.txnitems.map((item) => {
             return [
-              '('+item.ItemID+' - '+item.item.name+' - '+item.quantity+')'  
+              item.ItemID+','+item.item.name+','+item.quantity  
             ]
           })
         };
