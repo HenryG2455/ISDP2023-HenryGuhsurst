@@ -308,8 +308,6 @@ export class InventoryService {
             supplier: item.item.supplier.name,
             item: item.item.name,
             site: item.site.name,
-            quantity: item.quantity,
-            threshold: item.reorderThreshold,
             location: item.itemLocation,
           };
         });
