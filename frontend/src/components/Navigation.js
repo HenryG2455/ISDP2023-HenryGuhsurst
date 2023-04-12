@@ -71,7 +71,8 @@ export default function Navigation({ user, setUser }) {
         }
     }
     function Logout(){
-        localStorage.removeItem("User");
+        if(user != null){
+            localStorage.removeItem("User");
         setUser(null);
         setLoggedOut(true);
         setProductPage('hidden')
@@ -97,6 +98,10 @@ export default function Navigation({ user, setUser }) {
             console.log(data);
             //window.location.reload();
           })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
         navigate("/login");
     }
     return (

@@ -39,3 +39,164 @@
     transform: rotate(360deg);
   }
 }
+
+
+.hidden{
+  display: none;
+}
+.navlink{
+  margin:2px;
+  padding:.5rem;
+}
+.navbar{
+  padding:.5rem;
+  background-color: rgb(189, 229, 245);
+}
+#location{
+  float: right;
+}
+.table-container {
+  max-height: 300px !important; /* set a fixed height */
+  overflow: auto !important;
+  border: thin solid darkgray;
+  margin-bottom: 20px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.flexBottom{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.flexChild{
+  position: relative;
+  flex: 1;
+}
+#notesLabel{
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#notes{
+  margin-left: 3rem;
+  font-size: small;
+}
+#lossReturn{
+  margin-left: 2rem;
+}
+
+.table-container-record {
+  max-height: 600px !important; /* set a fixed height */
+  overflow: auto !important;
+  border: thin solid darkgray;
+  margin-bottom: 20px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.table-container-LR {
+  max-height: 450px !important; /* set a fixed height */
+  overflow: auto !important;
+  border: thin solid darkgray;
+  margin-bottom: 20px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.table-itemcontainer{
+  max-height: 300px !important; /* set a fixed height */
+  overflow: auto !important;
+  border: thin solid darkgray;
+}
+
+.table-invcontainer{
+  max-height: 600px !important; /* set a fixed height */
+  overflow: auto !important;
+  border: thin solid darkgray;
+}
+.orderInput{
+  width: 43px;
+}
+.load-order{
+  text-align: center; /* optional, to center the child divs */
+}
+.loadInfo {
+  display: inline-block;
+  width: 70%; /* optional, to give each child div equal width */
+  vertical-align: top; /* optional, to align the child divs at the top */
+}
+.truckInfo {
+  display: inline-block;
+  width: 30%; /* optional, to give each child div equal width */
+  vertical-align: top; /* optional, to align the child divs at the top */
+}
+
+#radioBtn{
+  position: absolute; /* position absolutely within parent */
+  right: 0;
+  top:1rem;
+}
+#headerContainer{
+  position: relative;
+}
+.selected{
+  background-color: #a1f6a6;
+}
+.orderInfo{
+  margin: 0;
+}
+#viewContainer{
+  position: relative;
+}
+#closeButton{
+  position: absolute; /* position absolutely within parent */
+  right: 0;
+  top:1rem;
+}
+.blue{
+  background-color: lightblue !important;
+}
+#delivery-select{
+  margin:3px;
+}
+.inputs{
+  margin: 3px;
+}
+.topper{
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-bottom: 1rem;
+  padding: 1rem;;
+}
+#mainPageContainer{
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-bottom: 1rem;
+  padding: 1rem;;
+}
+.ordersBtn{
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-top: 1rem;
+}
+.mainPageContainer{
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-bottom: 1rem;
+  padding: 1rem;;
+}
+
+.border{
+  padding: 5px;
+  border: 1px solid black;
+}
+.chart{
+  height: 600px;
+
+}
+
+
+#parent{display:flex;align-items:flex-start;justify-content:center;}
+
+#child{background:yellow;}
+
+#child{flex-grow:1;text-align:center;}

@@ -1,5 +1,5 @@
 import React, { useEffect , useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import './App.css';
  
@@ -17,48 +17,51 @@ import CustomerPage from './customer/CustomerPage';
 import CustomerSearch from './customer/CustomerSearch';
 import Products from './components/Products/Products';
 import NewProduct from './components/Products/NewProduct';
+
  
 function App(){
     const [user, setUser] = useState(null);
     useEffect( ()=> {
         console.log(user);
-      },[user]);
+    },[user]);
 
-      useEffect(()=>{
-        let temp = localStorage.getItem("User");
-        //console.log(temp);
-        if(temp == null){
-            //navigate("/login");
-        }else if(user == null){
-            console.log(JSON.parse(temp));
-            setUser(JSON.parse(temp));
-        }
-      },[])
+    useEffect(()=>{
+    let temp = localStorage.getItem("User");
+        console.log(temp);
+    if(temp == null){
+        //navigate("/login");
+    }else if(user == null){
+        console.log(JSON.parse(temp));
+        setUser(JSON.parse(temp));
+    }
+    },[])
       const setEmployee = (emp) =>{
         setUser(emp);
       }
 
       return (      
-          <BrowserRouter>
+        <HashRouter>
           <div>
               <Navigation user={user} setUser={setUser}/>
-              <Routes>
-                  <Route index element={<DashBoard user={user} setUser={setUser}/>} />
+              <div>
+                <Routes>
+                  <Route path="/" element={<DashBoard user={user} setUser={setUser}/>} />
                   <Route path="/acadia" element={<Acadia user={user} setUser={setUser}/>} />
                   <Route path="/products" element={<Products user={user} setUser={setUser}/>} />
                   <Route path="/products/new" element={<NewProduct user={user} setUser={setUser}/>} />
-                  <Route path="/login" element={<Login setUser={setUser}/>}  exact/>
-                  <Route path="/crud" element={<EmployeeCRUD  user={user}/>} exact/>
-                  <Route path="/crudreports" element={<RecordCRUD  user={user}/>} exact/>
-                  <Route path="/addemployee" element={<NewEmployeeForm user={user}/>} exact/>
-                  <Route path="/home" element={<HomePage user={user} setUser={setUser}/>} exact/>
-                  <Route path="/locations" element={<Locations user={user} setUser={setUser}/>} exact/>
-                  <Route path="/addsite" element={<CreateNewSite user={user} setUser={setUser}/>} exact/>
+                  <Route path="/login" element={<Login setUser={setUser}/>}/>
+                  <Route path="/crud" element={<EmployeeCRUD  user={user}/>} />
+                  <Route path="/crudreports" element={<RecordCRUD  user={user}/>} />
+                  <Route path="/addemployee" element={<NewEmployeeForm user={user}/>} />
+                  <Route path="/home" element={<HomePage user={user} setUser={setUser}/>} />
+                  <Route path="/locations" element={<Locations user={user} setUser={setUser}/>} />
+                  <Route path="/addsite" element={<CreateNewSite user={user} setUser={setUser}/>} />
                   <Route path="/customer" element={<CustomerPage/>} />
                   <Route path="/onlinesearch" element={<CustomerSearch/>} />
               </Routes>
+              </div>
           </div> 
-          </BrowserRouter>
+          </HashRouter>
       );
 }
 export default App;

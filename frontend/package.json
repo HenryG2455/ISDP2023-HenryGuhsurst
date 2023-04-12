@@ -9,7 +9,11 @@
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.2.3",
     "chart.js": "^4.2.1",
+    "concurrently": "^8.0.1",
+    "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
+    "electron": "^24.1.0",
+    "electron-builder": "^23.6.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
     "react-chartjs-2": "^5.2.0",
@@ -17,13 +21,39 @@
     "react-router-dom": "^6.8.0",
     "react-scripts": "5.0.1",
     "stream-browserify": "^3.0.0",
+    "wait-on": "^7.0.1",
     "web-vitals": "^2.1.0"
   },
+  "main": "electron.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently \"npm run start:react\" \"npm run start:electron\"",
+    "start:react": "cross-env BROWSER=none react-scripts start",
+    "start:electron": "wait-on tcp:3000 && electron .",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "package": "electron-builder build --dir",
+    "dist": "npm run build && electron-builder build"
+  },
+  "build": {
+    "appId": "com.bullseyeApp",
+    "productName": "Bullseye Inventory Management System",
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "build/**/*",
+      "src/**/*",
+      "electron.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
   },
   "eslintConfig": {
     "extends": [
